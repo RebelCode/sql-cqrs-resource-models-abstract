@@ -3,7 +3,7 @@
 namespace RebelCode\Storage\Resource\Sql\UnitTest;
 
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
-use RebelCode\Storage\Resource\Sql\EscapeSqlReferenceCapableTrait as TestSubject;
+use RebelCode\Storage\Resource\Sql\EscapeSqlReferencesCapableTrait as TestSubject;
 use Xpmock\TestCase;
 
 /**
@@ -11,14 +11,14 @@ use Xpmock\TestCase;
  *
  * @since [*next-version*]
  */
-class EscapeSqlReferenceCapableTraitTest extends TestCase
+class EscapeSqlReferencesCapableTraitTest extends TestCase
 {
     /**
      * The class name of the test subject.
      *
      * @since [*next-version*]
      */
-    const TEST_SUBJECT_CLASSNAME = 'RebelCode\Storage\Resource\Sql\EscapeSqlReferenceCapableTrait';
+    const TEST_SUBJECT_CLASSNAME = 'RebelCode\Storage\Resource\Sql\EscapeSqlReferencesCapableTrait';
 
     /**
      * Creates a new instance of the test subject.
@@ -30,7 +30,7 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
     public function createInstance()
     {
         $builder = $this->getMockBuilder(static::TEST_SUBJECT_CLASSNAME)
-                        ->setMethods([]);
+                        ->setMethods(['_normalizeArray']);
 
         $mock = $builder->getMockForTrait();
 
@@ -58,7 +58,7 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testEscapeSqlReference()
+    public function testEscapeSqlReferencesString()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
@@ -66,9 +66,11 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
         $reference = uniqid('ref-');
         $expected = "`$reference`";
 
+        $subject->method('_normalizeArray')->willReturn([$reference]);
+
         $this->assertEquals(
             $expected,
-            $reflect->_escapeSqlReference($reference),
+            $reflect->_escapeSqlReferences($reference),
             'Retrieved and expected escaped references do not match.'
         );
     }
@@ -78,12 +80,12 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testEscapeSqlReferenceEmptyString()
+    public function testEscapeSqlReferencesEmptyString()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $result = $reflect->_escapeSqlReference('');
+        $result = $reflect->_escapeSqlReferences('');
 
         $this->assertEquals(0, strlen($result), 'Result is not empty.');
     }
@@ -93,7 +95,7 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testEscapeSqlReferenceArray()
+    public function testEscapeSqlReferencesArray()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
@@ -105,9 +107,11 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
         ];
         $expected = "`$ref1`, `$ref2`, `$ref3`";
 
+        $subject->method('_normalizeArray')->willReturn($references);
+
         $this->assertEquals(
             $expected,
-            $reflect->_escapeSqlReferenceArray($references),
+            $reflect->_escapeSqlReferences($references),
             'Retrieved and expected escaped reference lists do not match.'
         );
     }
@@ -118,7 +122,7 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testEscapeSqlReferenceArrayEmpty()
+    public function testEscapeSqlReferencesArrayEmpty()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
@@ -128,7 +132,7 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
 
         $this->assertEquals(
             $expected,
-            $reflect->_escapeSqlReferenceArray($references),
+            $reflect->_escapeSqlReferences($references),
             'Retrieved and expected escaped reference lists do not match.'
         );
     }
