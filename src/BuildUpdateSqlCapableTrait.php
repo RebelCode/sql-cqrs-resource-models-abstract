@@ -10,6 +10,7 @@ use Dhii\Output\Exception\TemplateRenderExceptionInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
+use stdClass;
 use Traversable;
 
 /**
@@ -51,7 +52,7 @@ trait BuildUpdateSqlCapableTrait
             );
         }
 
-        $tableName = $this->_escapeSqlReference($table);
+        $tableName = $this->_escapeSqlReferences($table);
         $updateSet = $this->_buildSqlUpdateSet($changeSet, $valueHashMap);
         $where = $this->_buildSqlWhereClause($condition, $valueHashMap);
 
@@ -117,15 +118,15 @@ trait BuildUpdateSqlCapableTrait
     }
 
     /**
-     * Escapes a reference string for use in SQL queries.
+     * Escapes a reference string, or a list of reference strings, for use in SQL queries.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable $reference The reference string to escape.
+     * @param string|Stringable|array|stdClass|Traversable $references The reference strings to escape.
      *
-     * @return string The escaped reference string.
+     * @return string The escaped references, as a comma separated string if a list was given.
      */
-    abstract protected function _escapeSqlReference($reference);
+    abstract protected function _escapeSqlReferences($references);
 
     /**
      * Renders an SQL expression.

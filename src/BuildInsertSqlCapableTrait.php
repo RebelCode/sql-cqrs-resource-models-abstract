@@ -5,6 +5,8 @@ namespace RebelCode\Storage\Resource\Sql;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
+use stdClass;
+use Traversable;
 
 /**
  * Common functionality for objects that can build INSERT SQL queries.
@@ -42,8 +44,8 @@ trait BuildInsertSqlCapableTrait
             );
         }
 
-        $tableName = $this->_escapeSqlReference($table);
-        $columnsList = $this->_escapeSqlReferenceArray($columns);
+        $tableName = $this->_escapeSqlReferences($table);
+        $columnsList = $this->_escapeSqlReferences($columns);
         $values = $this->_buildSqlValuesList($columns, $rowSet, $valueHashMap);
 
         $query = sprintf(
@@ -138,28 +140,6 @@ trait BuildInsertSqlCapableTrait
     }
 
     /**
-     * Escapes a reference string for use in SQL queries.
-     *
-     * @since [*next-version*]
-     *
-     * @param string|Stringable $reference The reference string to escape.
-     *
-     * @return string The escaped reference string.
-     */
-    abstract protected function _escapeSqlReference($reference);
-
-    /**
-     * Escapes an array of reference strings into a comma separated string list for use in SQL queries.
-     *
-     * @since [*next-version*]
-     *
-     * @param string[]|Stringable[] $array The array of strings to transform.
-     *
-     * @return string The comma separated string list.
-     */
-    abstract protected function _escapeSqlReferenceArray(array $array);
-
-    /**
      * Normalizes a value to its string representation.
      *
      * The values that can be normalized are any scalar values, as well as
@@ -174,6 +154,17 @@ trait BuildInsertSqlCapableTrait
      * @return string The string that resulted from normalization.
      */
     abstract protected function _normalizeString($subject);
+
+    /**
+     * Escapes a reference string, or a list of reference strings, for use in SQL queries.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable|array|stdClass|Traversable $references The reference strings to escape.
+     *
+     * @return string The escaped references, as a comma separated string if a list was given.
+     */
+    abstract protected function _escapeSqlReferences($references);
 
     /**
      * Creates a new Dhii invalid argument exception.

@@ -8,6 +8,7 @@ use Dhii\Output\Exception\RendererExceptionInterface;
 use Dhii\Output\Exception\TemplateRenderExceptionInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use InvalidArgumentException;
+use stdClass;
 use Traversable;
 
 /**
@@ -32,7 +33,7 @@ trait BuildSqlJoinsCapableTrait
         $joins = [];
 
         foreach ($joinConditions as $_table => $_condition) {
-            $_escTable   = $this->_escapeSqlReference($_table);
+            $_escTable   = $this->_escapeSqlReferences($_table);
             $_rCondition = $this->_renderSqlCondition($_condition, $valueHashMap);
             $_joinType   = $this->_getSqlJoinType($_condition);
             $joins []    = sprintf('%1$s JOIN %2$s ON %3$s', $_joinType, $_escTable, $_rCondition);
@@ -68,15 +69,15 @@ trait BuildSqlJoinsCapableTrait
     abstract protected function _renderSqlCondition(LogicalExpressionInterface $condition, array $valueHashMap = []);
 
     /**
-     * Escapes a reference string for use in SQL queries.
+     * Escapes a reference string, or a list of reference strings, for use in SQL queries.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable $reference The reference string to escape.
+     * @param string|Stringable|array|stdClass|Traversable $references The reference strings to escape.
      *
-     * @return string The escaped reference string.
+     * @return string The escaped references, as a comma separated string if a list was given.
      */
-    abstract protected function _escapeSqlReference($reference);
+    abstract protected function _escapeSqlReferences($references);
 
     /**
      * Normalizes a value to its string representation.

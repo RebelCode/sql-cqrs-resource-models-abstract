@@ -33,8 +33,7 @@ class BuildInsertSqlCapableTraitTest extends TestCase
         $builder = $this->getMockBuilder(static::TEST_SUBJECT_CLASSNAME)
                         ->setMethods(
                             [
-                                '_escapeSqlReference',
-                                '_escapeSqlReferenceArray',
+                                '_escapeSqlReferences',
                                 '_normalizeString',
                                 '_createInvalidArgumentException',
                                 '__',
@@ -44,10 +43,13 @@ class BuildInsertSqlCapableTraitTest extends TestCase
         $mock = $builder->getMockForTrait();
 
         // Simple, zero-escaping, mock implementations
-        $mock->method('_escapeSqlReference')->willReturnArgument(0);
-        $mock->method('_escapeSqlReferenceArray')->willReturnCallback(
+        $mock->method('_escapeSqlReferences')->willReturnCallback(
             function($input) {
-                return implode(', ', $input);
+                if (is_array($input)) {
+                    return implode(', ', $input);
+                }
+
+                return $input;
             }
         );
         $mock->method('_normalizeString')->willReturnCallback(

@@ -4,6 +4,8 @@ namespace RebelCode\Storage\Resource\Sql;
 
 use Dhii\Expression\LogicalExpressionInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
+use stdClass;
+use Traversable;
 
 /**
  * Common functionality for objects that can build DELETE SQL queries.
@@ -28,7 +30,7 @@ trait BuildDeleteSqlCapableTrait
         LogicalExpressionInterface $condition = null,
         array $valueHashMap = []
     ) {
-        $escTable = $this->_escapeSqlReference($table);
+        $escTable = $this->_escapeSqlReferences($table);
         $where = $this->_buildSqlWhereClause($condition, $valueHashMap);
 
         $query = sprintf('DELETE FROM %1$s %2$s', $escTable, $where);
@@ -53,13 +55,13 @@ trait BuildDeleteSqlCapableTrait
     );
 
     /**
-     * Escapes a reference string for use in SQL queries.
+     * Escapes a reference string, or a list of reference strings, for use in SQL queries.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable $reference The reference string to escape.
+     * @param string|Stringable|array|stdClass|Traversable $references The reference strings to escape.
      *
-     * @return string The escaped reference string.
+     * @return string The escaped references, as a comma separated string if a list was given.
      */
-    abstract protected function _escapeSqlReference($reference);
+    abstract protected function _escapeSqlReferences($references);
 }

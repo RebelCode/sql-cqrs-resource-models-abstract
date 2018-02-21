@@ -44,7 +44,7 @@ class BuildDeleteSqlCapableTraitTest extends TestCase
                         );
 
         $mock = $builder->getMockForTrait();
-        $mock->method('_escapeSqlReference')->willReturnArgument(0);
+        $mock->method('_escapeSqlReferences')->willReturnArgument(0);
 
         return $mock;
     }

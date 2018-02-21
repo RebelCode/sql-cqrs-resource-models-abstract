@@ -6,6 +6,7 @@ use Dhii\Expression\LogicalExpressionInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
+use stdClass;
 use Traversable;
 
 /**
@@ -45,10 +46,10 @@ trait BuildSelectSqlCapableTrait
         }
 
         $columnList = (count($columns) > 0)
-            ? $this->_escapeSqlReferenceArray($columns)
+            ? $this->_escapeSqlReferences($columns)
             : '*';
 
-        $tableList = $this->_escapeSqlReferenceArray($tables);
+        $tableList = $this->_escapeSqlReferences($tables);
         $joins     = $this->_buildSqlJoins($joinConditions, $valueHashMap);
         $where     = $this->_buildSqlWhereClause($whereCondition, $valueHashMap);
 
@@ -91,15 +92,15 @@ trait BuildSelectSqlCapableTrait
     );
 
     /**
-     * Escapes an array of reference strings into a comma separated string list for use in SQL queries.
+     * Escapes a reference string, or a list of reference strings, for use in SQL queries.
      *
      * @since [*next-version*]
      *
-     * @param string[]|Stringable[] $array The array of strings to transform.
+     * @param string|Stringable|array|stdClass|Traversable $references The reference strings to escape.
      *
-     * @return string The comma separated string list.
+     * @return string The escaped references, as a comma separated string if a list was given.
      */
-    abstract protected function _escapeSqlReferenceArray(array $array);
+    abstract protected function _escapeSqlReferences($references);
 
     /**
      * Creates a new Dhii invalid argument exception.
