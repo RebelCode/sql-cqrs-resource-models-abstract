@@ -33,9 +33,8 @@ class BuildInsertSqlCapableTraitTest extends TestCase
         $builder = $this->getMockBuilder(static::TEST_SUBJECT_CLASSNAME)
                         ->setMethods(
                             [
+                                '_buildSqlRecordValues',
                                 '_escapeSqlReferences',
-                                '_normalizeSqlValue',
-                                '_normalizeString',
                                 '_createInvalidArgumentException',
                                 '__',
                             ]
@@ -51,16 +50,6 @@ class BuildInsertSqlCapableTraitTest extends TestCase
                 }
 
                 return $input;
-            }
-        );
-        $mock->method('_normalizeSqlValue')->willReturnCallback(
-            function($input) {
-                return sprintf('"%s"', $input);
-            }
-        );
-        $mock->method('_normalizeString')->willReturnCallback(
-            function($input) {
-                return strval($input);
             }
         );
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
@@ -99,31 +88,44 @@ class BuildInsertSqlCapableTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $result = $reflect->_buildInsertSql(
-            $table = 'test',
-            $columns = ['id', 'name', 'surname'],
-            $rows = [
-                [
-                    'id'      => 1,
-                    'name'    => 'Miguel',
-                    'surname' => 'Muscat',
-                ],
-                [
-                    'id'      => 2,
-                    'name'    => 'Anton',
-                    'surname' => 'Ukhanev',
-                ],
+        $table = 'test';
+        $columns = ['id', 'name', 'surname'];
+        $rows = [
+            [
+                'id'      => 1,
+                'name'    => 'Miguel',
+                'surname' => 'Muscat',
             ],
-            $valueHashMap = [
-                '1'      => ':123',
-                '2'      => ':456',
-                'Miguel' => ':321',
-                'Muscat' => ':654',
-            ]
+            [
+                'id'      => 2,
+                'name'    => 'Anton',
+                'surname' => 'Ukhanev',
+            ],
+        ];
+        $valueHashMap = [
+            '1'      => ':123',
+            '2'      => ':456',
+            'Miguel' => ':321',
+            'Muscat' => ':654',
+        ];
+
+        $values1 = '(:123, :321, :654)';
+        $values2 = '(:456, "Anton", "Ukhanev")';
+
+        $subject->expects($this->exactly(count($rows)))
+                ->method('_buildSqlRecordValues')
+                ->withConsecutive([$columns, $rows[0], $valueHashMap], [$columns, $rows[1], $valueHashMap])
+                ->willReturnOnConsecutiveCalls($values1, $values2);
+
+        $result = $reflect->_buildInsertSql(
+            $table,
+            $columns,
+            $rows,
+            $valueHashMap
         );
 
         $this->assertEquals(
-            'INSERT INTO test (id, name, surname) VALUES (:123, :321, :654), (:456, "Anton", "Ukhanev");',
+            'INSERT INTO test (id, name, surname) VALUES ' . $values1 . ', ' . $values2 . ';',
             $result,
             'Retrieved and expected queries do not match.'
         );

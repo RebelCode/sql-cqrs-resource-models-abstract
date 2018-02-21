@@ -2,9 +2,13 @@
 
 namespace RebelCode\Storage\Resource\Sql;
 
+use ArrayAccess;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
+use OutOfRangeException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use stdClass;
 use Traversable;
 
@@ -20,135 +24,60 @@ trait BuildInsertSqlCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable     $table        The name of the table to insert into.
-     * @param string[]|Stringable[] $columns      A list of columns names. The order is preserved in the built query.
-     * @param array                 $rowSet       The record data as a map of column names to values.
-     * @param array                 $valueHashMap Optional map of value names and their hashes.
+     * @param string|Stringable $table        The name of the table to insert into.
+     * @param array|Traversable $columns      A list of columns names. The order is preserved in the built query.
+     * @param array|Traversable $records      The list of record data containers.
+     * @param array             $valueHashMap Optional map of value names and their hashes.
      *
      * @throws InvalidArgumentException If the row set is empty.
      *
      * @return string The built INSERT query.
      */
-    protected function _buildInsertSql(
-        $table,
-        array $columns,
-        array $rowSet,
-        array $valueHashMap = []
-    ) {
-        if (count($rowSet) === 0) {
+    protected function _buildInsertSql($table, $columns, $records, array $valueHashMap = [])
+    {
+        if (count($records) === 0) {
             throw $this->_createInvalidArgumentException(
                 $this->__('Row set cannot be empty'),
                 null,
                 null,
-                $rowSet
+                $records
             );
         }
 
         $tableName = $this->_escapeSqlReferences($table);
         $columnsList = $this->_escapeSqlReferences($columns);
-        $values = $this->_buildSqlValuesList($columns, $rowSet, $valueHashMap);
+
+        $values = [];
+        foreach ($records as $_rowData) {
+            $values[] = $this->_buildSqlRecordValues($columns, $_rowData, $valueHashMap);
+        }
 
         $query = sprintf(
-            'INSERT INTO %1$s (%2$s) %3$s',
+            'INSERT INTO %1$s (%2$s) VALUES %3$s',
             $tableName,
             $columnsList,
-            $values
+            implode(', ', $values)
         );
 
         return sprintf('%s;', trim($query));
     }
 
     /**
-     * Builds the VALUES portion of an INSERT SQL query.
+     * Builds the values for a single record.
      *
      * @since [*next-version*]
      *
-     * @param string[]|Stringable[] $columns      A list of columns names. The order is preserved in the built query.
-     * @param array                 $rowSet       A list containing record data maps, mapping column names to row
-     *                                            values.
-     * @param array                 $valueHashMap Optional map of value names and their hashes.
-     *
-     * @return string The built VALUES list or an empty string if the row set has no entries.
-     */
-    protected function _buildSqlValuesList(
-        array $columns,
-        array $rowSet,
-        array $valueHashMap = []
-    ) {
-        $values = [];
-
-        foreach ($rowSet as $_rowData) {
-            $values[] = $this->_buildSqlRowValues($columns, $_rowData, $valueHashMap);
-        }
-
-        return sprintf('VALUES %s', implode(', ', $values));
-    }
-
-    /**
-     * Builds the values for a single row.
-     *
-     * @since [*next-version*]
-     *
-     * @param array $columns      The list of columns, used to sort and exclude non-database row data.
-     * @param array $rowData      The row data, as a map of column names to row values.
-     * @param array $valueHashMap Optional map of value names and their hashes.
+     * @param array|Traversable                             $columns      The list of table columns.
+     * @param array|ArrayAccess|stdClass|ContainerInterface $record       The record data container.
+     * @param array                                         $valueHashMap Optional map of value names and their hashes.
      *
      * @return string The build row values as a comma separated list in parenthesis.
+     *
+     * @throws InvalidArgumentException    If the record data container is invalid.
+     * @throws ContainerExceptionInterface If an error occurred while reading from the record data container.
+     * @throws OutOfRangeException         If a column name is invalid.
      */
-    protected function _buildSqlRowValues(
-        array $columns,
-        array $rowData,
-        array $valueHashMap = []
-    ) {
-        $data = [];
-
-        foreach ($columns as $_columnName) {
-            if (!isset($rowData[$_columnName])) {
-                continue;
-            }
-
-            // Get row data for this column
-            $_value = $rowData[$_columnName];
-            $_valueKey = $this->_normalizeString($_value);
-            // Use hash instead of value if available
-            $_realValue = isset($valueHashMap[$_valueKey])
-                ? $valueHashMap[$_valueKey]
-                : $this->_normalizeSqlValue($_value);
-
-            $data[$_columnName] = $_realValue;
-        }
-
-        $commaList = implode(', ', $data);
-
-        return sprintf('(%s)', $commaList);
-    }
-
-    /**
-     * Normalizes an SQL value, quoting it if it's a string.
-     *
-     * @since [*next-version*]
-     *
-     * @param mixed $value The input value.
-     *
-     * @return string The normalized value.
-     */
-    abstract protected function _normalizeSqlValue($value);
-
-    /**
-     * Normalizes a value to its string representation.
-     *
-     * The values that can be normalized are any scalar values, as well as
-     * {@see StringableInterface).
-     *
-     * @since [*next-version*]
-     *
-     * @param string|int|float|bool|Stringable $subject The value to normalize to string.
-     *
-     * @throws InvalidArgumentException If the value cannot be normalized.
-     *
-     * @return string The string that resulted from normalization.
-     */
-    abstract protected function _normalizeString($subject);
+    abstract protected function _buildSqlRecordValues($columns, $record, array $valueHashMap = []);
 
     /**
      * Escapes a reference string, or a list of reference strings, for use in SQL queries.
