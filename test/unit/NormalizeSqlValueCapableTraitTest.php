@@ -11,7 +11,7 @@ use Xpmock\TestCase;
  *
  * @since [*next-version*]
  */
-class NormalizeSqlValueCapableTrait extends TestCase
+class NormalizeSqlValueCapableTraitTest extends TestCase
 {
     /**
      * The class name of the test subject.
