@@ -57,7 +57,7 @@ trait BuildUpdateSqlCapableTrait
         $where = $this->_buildSqlWhereClause($condition, $valueHashMap);
 
         $query = sprintf(
-            'UPDATE %1$s %2$s %3$s',
+            'UPDATE %1$s SET %2$s %3$s',
             $tableName,
             $updateSet,
             $where
@@ -67,7 +67,7 @@ trait BuildUpdateSqlCapableTrait
     }
 
     /**
-     * Builds the SQL UPDATE SET query string portion.
+     * Builds the SET portion of an SQL UPDATE query.
      *
      * @since [*next-version*]
      *
@@ -75,42 +75,9 @@ trait BuildUpdateSqlCapableTrait
      *                                                              values or value expressions.
      * @param array                                   $valueHashMap Optional map of value names and their hashes.
      *
-     * @return string The built SQL UPDATE SET portion string.
+     * @return string The built SET portion string.
      */
-    protected function _buildSqlUpdateSet($changeSet, array $valueHashMap)
-    {
-        $_changes = [];
-
-        foreach ($changeSet as $_field => $_value) {
-            if ($_value instanceof ExpressionInterface) {
-                $_value = $this->_renderSqlExpression($_value, $valueHashMap);
-            } else {
-                $_valueStr = $this->_normalizeString($_value);
-
-                $_value = isset($valueHashMap[$_valueStr])
-                    ? $valueHashMap[$_valueStr]
-                    : $this->_normalizeSqlValue($_value);
-            }
-
-            $_changes[] = sprintf('`%1$s` = %2$s', $_field, $_value);
-        }
-
-        $changeStr = implode(', ', $_changes);
-        $setPortion = sprintf('SET %s', $changeStr);
-
-        return $setPortion;
-    }
-
-    /**
-     * Normalizes an SQL value, quoting it if it's a string.
-     *
-     * @since [*next-version*]
-     *
-     * @param mixed $value The input value.
-     *
-     * @return string The normalized value.
-     */
-    abstract protected function _normalizeSqlValue($value);
+    abstract protected function _buildSqlUpdateSet($changeSet, array $valueHashMap);
 
     /**
      * Escapes a reference string, or a list of reference strings, for use in SQL queries.
@@ -122,21 +89,6 @@ trait BuildUpdateSqlCapableTrait
      * @return string The escaped references, as a comma separated string if a list was given.
      */
     abstract protected function _escapeSqlReferences($references);
-
-    /**
-     * Renders an SQL expression.
-     *
-     * @since [*next-version*]
-     *
-     * @param TermInterface         $expression   The expression to render.
-     * @param string[]|Stringable[] $valueHashMap Optional mapping of term names to their hashes.
-     *
-     * @throws RendererExceptionInterface       If an error occurred while rendering.
-     * @throws TemplateRenderExceptionInterface If the renderer failed to render the expression and context.
-     *
-     * @return string|Stringable The rendered expression.
-     */
-    abstract protected function _renderSqlExpression(TermInterface $expression, array $valueHashMap = []);
 
     /**
      * Builds the SQL WHERE clause query string portion.
@@ -152,22 +104,6 @@ trait BuildUpdateSqlCapableTrait
         LogicalExpressionInterface $condition = null,
         array $valueHashMap = []
     );
-
-    /**
-     * Normalizes a value to its string representation.
-     *
-     * The values that can be normalized are any scalar values, as well as
-     * {@see StringableInterface).
-     *
-     * @since [*next-version*]
-     *
-     * @param string|int|float|bool|Stringable $subject The value to normalize to string.
-     *
-     * @throws InvalidArgumentException If the value cannot be normalized.
-     *
-     * @return string The string that resulted from normalization.
-     */
-    abstract protected function _normalizeString($subject);
 
     /**
      * Counts the elements in an iterable.

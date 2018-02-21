@@ -52,7 +52,7 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
 
         $mock = $builder->getMockForTrait();
         $mock->method('_escapeSqlReferences')->willReturnCallback(
-            function ($input) {
+            function($input) {
                 return is_array($input)
                     ? implode(', ', $input)
                     : $input;
@@ -129,89 +129,11 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests the UPDATE SQL build method.
-     *
-     * @since [*next-version*]
-     */
-    public function testBuildSqlUpdateSet()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $changeSet = [
-            'age'  => $cExpr1 = $this->createExpression('plus', ['age', 1]),
-            'name' => $cExpr2 = $this->createExpression('string', ['foobar']),
-        ];
-        $valueHashMap = [
-            '1'      => ':123',
-            'foobar' => ':456',
-        ];
-        $subject->expects($this->exactly(2))
-                ->method('_renderSqlExpression')
-                ->withConsecutive([$cExpr1, $valueHashMap], [$cExpr2, $valueHashMap])
-                ->willReturnOnConsecutiveCalls(
-                    'age + 1',
-                    '"foobar"'
-                );
-        $expected = 'SET `age` = age + 1, `name` = "foobar"';
-
-        $this->assertEquals(
-            $expected,
-            $reflect->_buildSqlUpdateSet($changeSet, $valueHashMap),
-            'Expected and retrieved query portions do not match.'
-        );
-    }
-
-    /**
-     * Tests the UPDATE SQL build method with a change set of expressions.
-     *
-     * @since [*next-version*]
-     */
-    public function testBuildUpdateSqlExpressions()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $table = 'my_table';
-        $changeSet = [
-            'age'  => $cExpr1 = $this->createExpression('plus', ['age', 1]),
-            'name' => $cExpr2 = $this->createExpression('string', ['foobar']),
-        ];
-        $valueHashMap = [
-            '1'      => ':123',
-            'foobar' => ':456',
-        ];
-        $subject->expects($this->exactly(2))
-                ->method('_renderSqlExpression')
-                ->withConsecutive([$cExpr1, $valueHashMap], [$cExpr2, $valueHashMap])
-                ->willReturnOnConsecutiveCalls(
-                    'age + 1',
-                    '"foobar"'
-                );
-        $set = 'SET `age` = age + 1, `name` = "foobar"';
-
-        $condition = $this->createLogicalExpression('equal', ['name', 'foo']);
-        $where = 'WHERE name = "foo"';
-        $subject->expects($this->once())
-                ->method('_buildSqlWhereClause')
-                ->with($condition, $valueHashMap)
-                ->willReturn($where);
-
-        $expected = "UPDATE $table $set $where;";
-
-        $this->assertEquals(
-            $expected,
-            $reflect->_buildUpdateSql($table, $changeSet, $condition, $valueHashMap),
-            'Expected and retrieved UPDATE queries do not match.'
-        );
-    }
-
-    /**
      * Tests the UPDATE SQL build method with a change set of values.
      *
      * @since [*next-version*]
      */
-    public function testBuildUpdateSqlValues()
+    public function testBuildUpdateSql()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
@@ -225,7 +147,10 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
             '10'  => ':123',
             'foo' => ':456',
         ];
-        $set = 'SET `name` = :456, `surname` = "bar"';
+
+        $subject->expects($this->once())
+                ->method('_buildSqlUpdateSet')
+                ->willReturn($set = '`name` = :456, `surname` = "bar"');
 
         $condition = $this->createLogicalExpression('equal', ['age', 10]);
         $where = 'WHERE age = :123';
@@ -234,7 +159,7 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
                 ->with($condition, $valueHashMap)
                 ->willReturn($where);
 
-        $expected = "UPDATE $table $set $where;";
+        $expected = "UPDATE $table SET $set $where;";
 
         $this->assertEquals(
             $expected,
@@ -262,14 +187,10 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
             '1'      => ':123',
             'foobar' => ':456',
         ];
-        $subject->expects($this->exactly(2))
-                ->method('_renderSqlExpression')
-                ->withConsecutive([$cExpr1, $valueHashMap], [$cExpr2, $valueHashMap])
-                ->willReturnOnConsecutiveCalls(
-                    'age + 1',
-                    '"foobar"'
-                );
-        $set = 'SET `age` = age + 1, `name` = "foobar"';
+
+        $subject->expects($this->once())
+                ->method('_buildSqlUpdateSet')
+                ->willReturn($set = '`age` = age + 1, `name` = "foobar"');
 
         $condition = null;
         $where = '';
@@ -278,7 +199,7 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
                 ->with($condition, $valueHashMap)
                 ->willReturn($where);
 
-        $expected = "UPDATE $table $set;";
+        $expected = "UPDATE $table SET $set;";
 
         $this->assertEquals(
             $expected,
