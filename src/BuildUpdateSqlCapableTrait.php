@@ -89,7 +89,7 @@ trait BuildUpdateSqlCapableTrait
 
                 $_value = isset($valueHashMap[$_valueStr])
                     ? $valueHashMap[$_valueStr]
-                    : $this->_sanitizeSqlValue($_value);
+                    : $this->_normalizeSqlValue($_value);
             }
 
             $_changes[] = sprintf('`%1$s` = %2$s', $_field, $_value);
@@ -102,20 +102,15 @@ trait BuildUpdateSqlCapableTrait
     }
 
     /**
-     * Sanitizes an SQL value and normalizes it into a string for use in queries.
+     * Normalizes an SQL value, quoting it if it's a string.
      *
      * @since [*next-version*]
      *
      * @param mixed $value The input value.
      *
-     * @return string The output value, sanitized and normalized to a string.
+     * @return string The normalized value.
      */
-    protected function _sanitizeSqlValue($value)
-    {
-        return (is_string($value) || $value instanceof Stringable)
-            ? sprintf('"%s"', $this->_normalizeString($value))
-            : $value;
-    }
+    abstract protected function _normalizeSqlValue($value);
 
     /**
      * Escapes a reference string, or a list of reference strings, for use in SQL queries.

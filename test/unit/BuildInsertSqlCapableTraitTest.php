@@ -34,6 +34,7 @@ class BuildInsertSqlCapableTraitTest extends TestCase
                         ->setMethods(
                             [
                                 '_escapeSqlReferences',
+                                '_normalizeSqlValue',
                                 '_normalizeString',
                                 '_createInvalidArgumentException',
                                 '__',
@@ -50,6 +51,11 @@ class BuildInsertSqlCapableTraitTest extends TestCase
                 }
 
                 return $input;
+            }
+        );
+        $mock->method('_normalizeSqlValue')->willReturnCallback(
+            function($input) {
+                return sprintf('"%s"', $input);
             }
         );
         $mock->method('_normalizeString')->willReturnCallback(

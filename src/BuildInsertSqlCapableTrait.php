@@ -113,7 +113,7 @@ trait BuildInsertSqlCapableTrait
             // Use hash instead of value if available
             $_realValue = isset($valueHashMap[$_valueKey])
                 ? $valueHashMap[$_valueKey]
-                : $this->_sanitizeSqlValue($_value);
+                : $this->_normalizeSqlValue($_value);
 
             $data[$_columnName] = $_realValue;
         }
@@ -124,20 +124,15 @@ trait BuildInsertSqlCapableTrait
     }
 
     /**
-     * Sanitizes an SQL value and normalizes it into a string for use in queries.
+     * Normalizes an SQL value, quoting it if it's a string.
      *
      * @since [*next-version*]
      *
      * @param mixed $value The input value.
      *
-     * @return string The output value, sanitized and normalized to a string.
+     * @return string The normalized value.
      */
-    protected function _sanitizeSqlValue($value)
-    {
-        return (is_string($value) || $value instanceof Stringable)
-            ? sprintf('"%s"', $this->_normalizeString($value))
-            : $value;
-    }
+    abstract protected function _normalizeSqlValue($value);
 
     /**
      * Normalizes a value to its string representation.
