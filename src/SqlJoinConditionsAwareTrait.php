@@ -3,8 +3,6 @@
 namespace RebelCode\Storage\Resource\Sql;
 
 use Dhii\Expression\LogicalExpressionInterface;
-use Dhii\Util\String\StringableInterface as Stringable;
-use Exception as RootException;
 use InvalidArgumentException;
 use stdClass;
 use Traversable;

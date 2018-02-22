@@ -40,7 +40,7 @@ class BuildSqlWhereClauseCapableTraitTest extends TestCase
 
         $mock = $builder->getMockForTrait();
         $mock->method('_normalizeString')->willReturnCallback(
-            function($input) {
+            function ($input) {
                 return strval($input);
             }
         );
@@ -104,7 +104,7 @@ class BuildSqlWhereClauseCapableTraitTest extends TestCase
         $rCondition = '`name` = :12345 AND `age` > 17';
         $valueHashMap = [
             'foobar' => ':12345',
-            'age'    => ':45678',
+            'age' => ':45678',
         ];
 
         $subject->expects($this->once())
@@ -112,7 +112,7 @@ class BuildSqlWhereClauseCapableTraitTest extends TestCase
                 ->with($condition, $valueHashMap)
                 ->willReturn($rCondition);
 
-        $expected = 'WHERE ' . $rCondition;
+        $expected = 'WHERE '.$rCondition;
         $result = $reflect->_buildSqlWhereClause($condition, $valueHashMap);
 
         $this->assertEquals($expected, $result, 'Expected and retrieved WHERE clauses are not the same.');

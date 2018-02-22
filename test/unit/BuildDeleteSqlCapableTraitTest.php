@@ -103,7 +103,7 @@ class BuildDeleteSqlCapableTraitTest extends TestCase
             ]
         );
         $valueHashMap = [
-            '18'       => ':12345',
+            '18' => ':12345',
             'verified' => ':56789',
         ];
         $where = 'WHERE `user_age` < :12345 OR `acc_verified` = :56789';

@@ -49,15 +49,16 @@ class BuildSelectSqlCapableTraitTest extends TestCase
 
         $mock = $builder->getMockForTrait();
         $mock->method('_escapeSqlReferences')->willReturnCallback(
-            function($input) {
+            function ($input) {
                 if (is_array($input)) {
                     return implode(', ', $input);
                 }
+
                 return $input;
             }
         );
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
-            function($m, $c, $p) {
+            function ($m, $c, $p) {
                 return new InvalidArgumentException($m, $c, $p);
             }
         );
@@ -118,7 +119,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $columnsList = 'id, name, age';
 
         $valueHashMap = [
-            '18'    => ':12345',
+            '18' => ':12345',
             'false' => ':56789',
         ];
 
@@ -136,7 +137,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->willReturn($where);
 
         $joinConditions = [
-            'posts'     => $this->createLogicalExpression(
+            'posts' => $this->createLogicalExpression(
                 'equals',
                 [
                     $this->createLogicalExpression('table_column', ['test', 'id']),
@@ -180,7 +181,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $columnsList = 'id, name, age';
 
         $valueHashMap = [
-            '18'    => ':12345',
+            '18' => ':12345',
             'false' => ':56789',
         ];
 
@@ -227,7 +228,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $columnsList = 'id, name, age';
 
         $valueHashMap = [
-            '18'    => ':12345',
+            '18' => ':12345',
             'false' => ':56789',
         ];
 
@@ -239,7 +240,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->willReturn($where);
 
         $joinConditions = [
-            'posts'     => $this->createLogicalExpression(
+            'posts' => $this->createLogicalExpression(
                 'equals',
                 [
                     $this->createLogicalExpression('table_column', ['test', 'id']),

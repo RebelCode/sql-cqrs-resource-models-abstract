@@ -41,7 +41,7 @@ class BuildSqlRecordValuesCapableTraitTest extends TestCase
 
         $mock = $builder->getMockForTrait();
         $mock->method('_normalizeString')->willReturnCallback(
-            function($input) {
+            function ($input) {
                 return strval($input);
             }
         );
@@ -178,7 +178,7 @@ class BuildSqlRecordValuesCapableTraitTest extends TestCase
                 ->method('_containerGet')
                 ->withConsecutive([$record, $col1], [$record, $col2], [$record, $col3])
                 ->willReturnCallback(
-                    function($c, $k) {
+                    function ($c, $k) {
                         if (isset($c[$k])) {
                             return $c[$k];
                         }

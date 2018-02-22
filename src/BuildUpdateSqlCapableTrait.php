@@ -5,8 +5,6 @@ namespace RebelCode\Storage\Resource\Sql;
 use Dhii\Expression\ExpressionInterface;
 use Dhii\Expression\LogicalExpressionInterface;
 use Dhii\Expression\TermInterface;
-use Dhii\Output\Exception\RendererExceptionInterface;
-use Dhii\Output\Exception\TemplateRenderExceptionInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
@@ -54,7 +52,7 @@ trait BuildUpdateSqlCapableTrait
 
         $tableName = $this->_escapeSqlReferences($table);
         $updateSet = $this->_buildSqlUpdateSet($changeSet, $valueHashMap);
-        $where = $this->_buildSqlWhereClause($condition, $valueHashMap);
+        $where     = $this->_buildSqlWhereClause($condition, $valueHashMap);
 
         $query = sprintf(
             'UPDATE %1$s SET %2$s %3$s',

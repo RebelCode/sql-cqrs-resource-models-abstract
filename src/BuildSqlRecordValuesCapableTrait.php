@@ -28,11 +28,11 @@ trait BuildSqlRecordValuesCapableTrait
      * @param array|ArrayAccess|stdClass|ContainerInterface $record       The record data container.
      * @param array                                         $valueHashMap Optional map of value names and their hashes.
      *
-     * @return string The build row values as a comma separated list in parenthesis.
-     *
      * @throws InvalidArgumentException    If the record data container is invalid.
      * @throws ContainerExceptionInterface If an error occurred while reading from the record data container.
      * @throws OutOfRangeException         If a column name is invalid.
+     *
+     * @return string The build row values as a comma separated list in parenthesis.
      */
     protected function _buildSqlRecordValues($columns, $record, array $valueHashMap = [])
     {
@@ -41,7 +41,7 @@ trait BuildSqlRecordValuesCapableTrait
         foreach ($columns as $_columnName) {
             try {
                 // Get row data for this column
-                $_value = $this->_containerGet($record, $_columnName);
+                $_value    = $this->_containerGet($record, $_columnName);
                 $_valueKey = $this->_normalizeString($_value);
                 // Use hash instead of value if available
                 $_realValue = isset($valueHashMap[$_valueKey])

@@ -51,7 +51,7 @@ class RenderSqlExpressionCapableTraitTest extends TestCase
 
         $mock = $builder->getMockForTrait();
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
-            function($m, $c, $p) {
+            function ($m, $c, $p) {
                 return new InvalidArgumentException($m, $c, $p);
             }
         );
@@ -159,7 +159,7 @@ class RenderSqlExpressionCapableTraitTest extends TestCase
                  ->method('render')
                  ->with(
                      [
-                         SqlCtx::K_EXPRESSION  => $expression,
+                         SqlCtx::K_EXPRESSION => $expression,
                          SqlCtx::K_ALIASES_MAP => array_merge($columnMap, $valueHashMap),
                      ]
                  )

@@ -44,7 +44,7 @@ trait BuildInsertSqlCapableTrait
             );
         }
 
-        $tableName = $this->_escapeSqlReferences($table);
+        $tableName   = $this->_escapeSqlReferences($table);
         $columnsList = $this->_escapeSqlReferences($columns);
 
         $values = [];
@@ -71,11 +71,11 @@ trait BuildInsertSqlCapableTrait
      * @param array|ArrayAccess|stdClass|ContainerInterface $record       The record data container.
      * @param array                                         $valueHashMap Optional map of value names and their hashes.
      *
-     * @return string The build row values as a comma separated list in parenthesis.
-     *
      * @throws InvalidArgumentException    If the record data container is invalid.
      * @throws ContainerExceptionInterface If an error occurred while reading from the record data container.
      * @throws OutOfRangeException         If a column name is invalid.
+     *
+     * @return string The build row values as a comma separated list in parenthesis.
      */
     abstract protected function _buildSqlRecordValues($columns, $record, array $valueHashMap = []);
 

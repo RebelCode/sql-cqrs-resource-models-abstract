@@ -34,7 +34,7 @@ trait EscapeSqlReferencesCapableTrait
             : $this->_normalizeArray($references);
 
         $commaList = implode('`, `', $array);
-        $escaped = sprintf('`%s`', $commaList);
+        $escaped   = sprintf('`%s`', $commaList);
 
         return $escaped;
     }

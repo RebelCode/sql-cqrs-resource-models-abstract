@@ -44,7 +44,7 @@ class BuildInsertSqlCapableTraitTest extends TestCase
 
         // Simple, zero-escaping, mock implementations
         $mock->method('_escapeSqlReferences')->willReturnCallback(
-            function($input) {
+            function ($input) {
                 if (is_array($input)) {
                     return implode(', ', $input);
                 }
@@ -53,7 +53,7 @@ class BuildInsertSqlCapableTraitTest extends TestCase
             }
         );
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
-            function($m, $c, $p) {
+            function ($m, $c, $p) {
                 return new InvalidArgumentException($m, $c, $p);
             }
         );
@@ -92,19 +92,19 @@ class BuildInsertSqlCapableTraitTest extends TestCase
         $columns = ['id', 'name', 'surname'];
         $rows = [
             [
-                'id'      => 1,
-                'name'    => 'Miguel',
+                'id' => 1,
+                'name' => 'Miguel',
                 'surname' => 'Muscat',
             ],
             [
-                'id'      => 2,
-                'name'    => 'Anton',
+                'id' => 2,
+                'name' => 'Anton',
                 'surname' => 'Ukhanev',
             ],
         ];
         $valueHashMap = [
-            '1'      => ':123',
-            '2'      => ':456',
+            '1' => ':123',
+            '2' => ':456',
             'Miguel' => ':321',
             'Muscat' => ':654',
         ];
@@ -125,7 +125,7 @@ class BuildInsertSqlCapableTraitTest extends TestCase
         );
 
         $this->assertEquals(
-            'INSERT INTO test (id, name, surname) VALUES ' . $values1 . ', ' . $values2 . ';',
+            'INSERT INTO test (id, name, surname) VALUES '.$values1.', '.$values2.';',
             $result,
             'Retrieved and expected queries do not match.'
         );

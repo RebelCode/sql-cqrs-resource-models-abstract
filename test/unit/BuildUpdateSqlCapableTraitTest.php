@@ -52,7 +52,7 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
 
         $mock = $builder->getMockForTrait();
         $mock->method('_escapeSqlReferences')->willReturnCallback(
-            function($input) {
+            function ($input) {
                 return is_array($input)
                     ? implode(', ', $input)
                     : $input;
@@ -60,12 +60,12 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
         );
         $mock->method('__')->willReturnArgument(0);
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
-            function($m, $c, $p) {
+            function ($m, $c, $p) {
                 return new InvalidArgumentException($m, $c, $p);
             }
         );
         $mock->method('_countIterable')->willReturnCallback(
-            function($i) {
+            function ($i) {
                 return count($i);
             }
         );
@@ -140,11 +140,11 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
 
         $table = 'my_table';
         $changeSet = [
-            'name'    => 'foo',
+            'name' => 'foo',
             'surname' => 'bar',
         ];
         $valueHashMap = [
-            '10'  => ':123',
+            '10' => ':123',
             'foo' => ':456',
         ];
 
@@ -180,11 +180,11 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
 
         $table = 'my_table';
         $changeSet = [
-            'age'  => $cExpr1 = $this->createExpression('plus', ['age', 1]),
+            'age' => $cExpr1 = $this->createExpression('plus', ['age', 1]),
             'name' => $cExpr2 = $this->createExpression('string', ['foobar']),
         ];
         $valueHashMap = [
-            '1'      => ':123',
+            '1' => ':123',
             'foobar' => ':456',
         ];
 

@@ -31,7 +31,7 @@ trait BuildDeleteSqlCapableTrait
         array $valueHashMap = []
     ) {
         $escTable = $this->_escapeSqlReferences($table);
-        $where = $this->_buildSqlWhereClause($condition, $valueHashMap);
+        $where    = $this->_buildSqlWhereClause($condition, $valueHashMap);
 
         $query = sprintf('DELETE FROM %1$s %2$s', $escTable, $where);
         $query = sprintf('%s;', trim($query));
