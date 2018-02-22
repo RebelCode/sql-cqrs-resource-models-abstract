@@ -2,8 +2,10 @@
 
 namespace RebelCode\Storage\Resource\Sql\UnitTest;
 
+use OutOfRangeException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use RebelCode\Storage\Resource\Sql\NormalizeSqlValueCapableTrait as TestSubject;
+use stdClass;
 use Xpmock\TestCase;
 
 /**
@@ -30,9 +32,21 @@ class NormalizeSqlValueCapableTraitTest extends TestCase
     public function createInstance()
     {
         $builder = $this->getMockBuilder(static::TEST_SUBJECT_CLASSNAME)
-                        ->setMethods(['_normalizeString']);
+                        ->setMethods(
+                            [
+                                '_normalizeString',
+                                '_createOutOfRangeException',
+                                '__',
+                            ]
+                        );
 
         $mock = $builder->getMockForTrait();
+        $mock->method('_createOutOfRangeException')->willReturnCallback(
+            function($m, $c, $p) {
+                return new OutOfRangeException($m, $c, $p);
+            }
+        );
+        $mock->method('__')->willReturnArgument(0);
 
         return $mock;
     }
@@ -58,13 +72,37 @@ class NormalizeSqlValueCapableTraitTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testNormalizeSqlValue()
+    public function testNormalizeSqlValueString()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
         $input = uniqid('input-');
         $expected = sprintf('"%s"', $input);
+        $subject->expects($this->once())
+                ->method('_normalizeString')
+                ->willReturn($input);
+
+        $this->assertEquals(
+            $expected,
+            $reflect->_normalizeSqlValue($input),
+            'Retrieved and expected escaped references do not match.'
+        );
+    }
+
+    /**
+     * Tests the normalization method with a numeric string to assert whether the value is correctly normalized.
+     *
+     * @since [*next-version*]
+     */
+    public function testNormalizeSqlValueNumericString()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $number = rand(0, 100);
+        $input = "$number";
+        $expected = $input;
         $subject->expects($this->once())
                 ->method('_normalizeString')
                 ->willReturn($input);
@@ -103,11 +141,11 @@ class NormalizeSqlValueCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests the normalization method with a string to assert whether the value is correctly normalized.
+     * Tests the normalization method with a misc scalar value to assert whether the value is correctly normalized.
      *
      * @since [*next-version*]
      */
-    public function testNormalizeSqlValueMisc()
+    public function testNormalizeSqlValueMiscScalar()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
@@ -120,5 +158,22 @@ class NormalizeSqlValueCapableTraitTest extends TestCase
             $reflect->_normalizeSqlValue($input),
             'Retrieved and expected escaped references do not match.'
         );
+    }
+
+    /**
+     * Tests the normalization method with a misc non-scalar value to assert whether an exception is thrown.
+     *
+     * @since [*next-version*]
+     */
+    public function testNormalizeSqlValueMiscInvalid()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $input = new stdClass();
+
+        $this->setExpectedException('OutOfRangeException');
+
+        $reflect->_normalizeSqlValue($input);
     }
 }
