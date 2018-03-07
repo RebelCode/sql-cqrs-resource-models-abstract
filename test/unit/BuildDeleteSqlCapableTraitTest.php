@@ -143,7 +143,7 @@ class BuildDeleteSqlCapableTraitTest extends TestCase
         $nLimit = rand(0, 50);
         $nOffset = rand(50, 100);
         $valueHashMap = [
-            '18' => ':12345',
+            '18'       => ':12345',
             'verified' => ':56789',
         ];
         $where = 'WHERE `user_age` < :12345 OR `acc_verified` = :56789';
@@ -175,6 +175,232 @@ class BuildDeleteSqlCapableTraitTest extends TestCase
             $ordering,
             $nLimit,
             $nOffset,
+            $valueHashMap
+        );
+
+        $this->assertEquals($expected, $result, 'Expected and retrieved queries do not match.');
+    }
+
+    /**
+     * Tests the DELETE SQL build method with no limit to assert whether the offset is ignored and the rest of
+     * the query is built as expected.
+     *
+     * @since [*next-version*]
+     */
+    public function testBuildDeleteSqlNoLimit()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $condition = $this->createLogicalExpression(
+            'or',
+            [
+                $this->createLogicalExpression('smaller', ['age', 18]),
+                $this->createLogicalExpression('equals', ['verified', false]),
+            ]
+        );
+        $ordering = [
+            $this->createOrder(null, 'age'),
+            $this->createOrder(null, 'verified', false),
+        ];
+        $nOffset = rand(50, 100);
+        $valueHashMap = [
+            '18'       => ':12345',
+            'verified' => ':56789',
+        ];
+        $where = 'WHERE `user_age` < :12345 OR `acc_verified` = :56789';
+
+        $subject->expects($this->once())
+                ->method('_buildSqlWhereClause')
+                ->with($condition, $valueHashMap)
+                ->willReturn($where);
+        $subject->expects($this->once())
+                ->method('_buildSqlOrderBy')
+                ->with($ordering)
+                ->willReturn($orderBy = 'ORDER BY age ASC, verified DESC');
+        $subject->expects($this->never())
+                ->method('_buildSqlLimit');
+        $subject->expects($this->never())
+                ->method('_buildSqlOffset');
+        $subject->method('_escapeSqlReference')->willReturnArgument(0);
+
+        $table = uniqid('table');
+        $expected = "DELETE FROM $table $where $orderBy;";
+
+        $result = $reflect->_buildDeleteSql(
+            $table,
+            $condition,
+            $ordering,
+            null,
+            $nOffset,
+            $valueHashMap
+        );
+
+        $this->assertEquals($expected, $result, 'Expected and retrieved queries do not match.');
+    }
+
+    /**
+     * Tests the DELETE SQL build method without an offset to assert whether the query is built without the OFFSET
+     * and the remainder of the query is as expected.
+     *
+     * @since [*next-version*]
+     */
+    public function testBuildDeleteSqlNoOffset()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $condition = $this->createLogicalExpression(
+            'or',
+            [
+                $this->createLogicalExpression('smaller', ['age', 18]),
+                $this->createLogicalExpression('equals', ['verified', false]),
+            ]
+        );
+        $ordering = [
+            $this->createOrder(null, 'age'),
+            $this->createOrder(null, 'verified', false),
+        ];
+        $nLimit = rand(0, 50);
+        $valueHashMap = [
+            '18'       => ':12345',
+            'verified' => ':56789',
+        ];
+        $where = 'WHERE `user_age` < :12345 OR `acc_verified` = :56789';
+
+        $subject->expects($this->once())
+                ->method('_buildSqlWhereClause')
+                ->with($condition, $valueHashMap)
+                ->willReturn($where);
+        $subject->expects($this->once())
+                ->method('_buildSqlOrderBy')
+                ->with($ordering)
+                ->willReturn($orderBy = 'ORDER BY age ASC, verified DESC');
+        $subject->expects($this->once())
+                ->method('_buildSqlLimit')
+                ->with($nLimit)
+                ->willReturn($limit = 'LIMIT ' . $nLimit);
+        $subject->expects($this->never())
+                ->method('_buildSqlOffset');
+        $subject->method('_escapeSqlReference')->willReturnArgument(0);
+
+        $table = uniqid('table');
+        $expected = "DELETE FROM $table $where $orderBy $limit;";
+
+        $result = $reflect->_buildDeleteSql(
+            $table,
+            $condition,
+            $ordering,
+            $nLimit,
+            null,
+            $valueHashMap
+        );
+
+        $this->assertEquals($expected, $result, 'Expected and retrieved queries do not match.');
+    }
+
+    /**
+     * Tests the DELETE SQL build method without an ordering to assert whether the query is built without the ORDER BY
+     * and the remainder of the query is as expected.
+     *
+     * @since [*next-version*]
+     */
+    public function testBuildDeleteSqlNoOrdering()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $condition = $this->createLogicalExpression(
+            'or',
+            [
+                $this->createLogicalExpression('smaller', ['age', 18]),
+                $this->createLogicalExpression('equals', ['verified', false]),
+            ]
+        );
+        $nLimit = rand(0, 50);
+        $nOffset = rand(50, 100);
+        $valueHashMap = [
+            '18'       => ':12345',
+            'verified' => ':56789',
+        ];
+        $where = 'WHERE `user_age` < :12345 OR `acc_verified` = :56789';
+
+        $subject->expects($this->once())
+                ->method('_buildSqlWhereClause')
+                ->with($condition, $valueHashMap)
+                ->willReturn($where);
+        $subject->expects($this->never())
+                ->method('_buildSqlOrderBy');
+        $subject->expects($this->once())
+                ->method('_buildSqlLimit')
+                ->with($nLimit)
+                ->willReturn($limit = 'LIMIT ' . $nLimit);
+        $subject->expects($this->once())
+                ->method('_buildSqlOffset')
+                ->with($nOffset)
+                ->willReturn($offset = 'OFFSET ' . $nOffset);
+        $subject->method('_escapeSqlReference')->willReturnArgument(0);
+
+        $table = uniqid('table');
+        $expected = "DELETE FROM $table $where $limit $offset;";
+
+        $result = $reflect->_buildDeleteSql(
+            $table,
+            $condition,
+            null,
+            $nLimit,
+            $nOffset,
+            $valueHashMap
+        );
+
+        $this->assertEquals($expected, $result, 'Expected and retrieved queries do not match.');
+    }
+
+    /**
+     * Tests the DELETE SQL build method without an ordering and a limit to assert whether the query is built without
+     * the ORDER BY and LIMIT parts and the remainder of the query is as expected.
+     *
+     * @since [*next-version*]
+     */
+    public function testBuildDeleteSqlNoOrderingNoLimit()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $condition = $this->createLogicalExpression(
+            'or',
+            [
+                $this->createLogicalExpression('smaller', ['age', 18]),
+                $this->createLogicalExpression('equals', ['verified', false]),
+            ]
+        );
+        $valueHashMap = [
+            '18'       => ':12345',
+            'verified' => ':56789',
+        ];
+        $where = 'WHERE `user_age` < :12345 OR `acc_verified` = :56789';
+
+        $subject->expects($this->once())
+                ->method('_buildSqlWhereClause')
+                ->with($condition, $valueHashMap)
+                ->willReturn($where);
+        $subject->expects($this->never())
+                ->method('_buildSqlOrderBy');
+        $subject->expects($this->never())
+                ->method('_buildSqlLimit');
+        $subject->expects($this->never())
+                ->method('_buildSqlOffset');
+        $subject->method('_escapeSqlReference')->willReturnArgument(0);
+
+        $table = uniqid('table');
+        $expected = "DELETE FROM $table $where;";
+
+        $result = $reflect->_buildDeleteSql(
+            $table,
+            $condition,
+            null,
+            null,
+            null,
             $valueHashMap
         );
 
