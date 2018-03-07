@@ -55,8 +55,9 @@ trait BuildDeleteSqlCapableTrait
             ? $this->_buildSqlOffset($offset)
             : '';
 
-        $query = sprintf('DELETE FROM %1$s %2$s %3$s %4$s %5$s', $escTable, $where, $sOrder, $sLimit, $sOffset);
-        $query = sprintf('%s;', trim($query));
+        $parts = array_filter([$escTable, $where, $sOrder, $sLimit, $sOffset], 'strlen');
+        $tail = implode(' ', $parts);
+        $query = sprintf('DELETE FROM %s;', $tail);
 
         return $query;
     }
