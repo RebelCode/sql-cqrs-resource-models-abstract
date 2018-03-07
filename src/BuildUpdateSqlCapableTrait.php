@@ -2,9 +2,11 @@
 
 namespace RebelCode\Storage\Resource\Sql;
 
+use Dhii\Exception\InternalExceptionInterface;
 use Dhii\Expression\ExpressionInterface;
 use Dhii\Expression\LogicalExpressionInterface;
 use Dhii\Expression\TermInterface;
+use Dhii\Storage\Resource\Sql\OrderInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
@@ -29,6 +31,8 @@ trait BuildUpdateSqlCapableTrait
      * @param array|TermInterface[]|Traversable $changeSet    The change set, mapping field names to their new values
      *                                                        or value expressions.
      * @param LogicalExpressionInterface|null   $condition    Optional WHERE clause condition.
+     * @param OrderInterface[]|Traversable|null $ordering     The ordering, as a list of OrderInterface instances.
+     * @param int|null                          $limit        The number of records to limit the query to.
      * @param array                             $valueHashMap Optional map of value names and their hashes.
      *
      * @throws InvalidArgumentException If the change set is empty.
@@ -39,6 +43,8 @@ trait BuildUpdateSqlCapableTrait
         $table,
         $changeSet,
         LogicalExpressionInterface $condition = null,
+        $ordering = null,
+        $limit = null,
         array $valueHashMap = []
     ) {
         if ($this->_countIterable($changeSet) === 0) {
@@ -52,13 +58,23 @@ trait BuildUpdateSqlCapableTrait
 
         $tableName = $this->_escapeSqlReference($table);
         $updateSet = $this->_buildSqlUpdateSet($changeSet, $valueHashMap);
-        $where     = $this->_buildSqlWhereClause($condition, $valueHashMap);
+        $where = $this->_buildSqlWhereClause($condition, $valueHashMap);
+
+        $sOrder = ($ordering !== null)
+            ? $this->_buildSqlOrderBy($ordering)
+            : '';
+        $sLimit = ($limit !== null)
+            ? $this->_buildSqlLimit($limit)
+            : '';
+
+        $parts = array_filter([$where, $sOrder, $sLimit], 'strlen');
+        $tail = implode(' ', $parts);
 
         $query = sprintf(
             'UPDATE %1$s SET %2$s %3$s',
             $tableName,
             $updateSet,
-            $where
+            $tail
         );
 
         return sprintf('%s;', trim($query));
@@ -76,6 +92,34 @@ trait BuildUpdateSqlCapableTrait
      * @return string The built SET portion string.
      */
     abstract protected function _buildSqlUpdateSet($changeSet, array $valueHashMap);
+
+    /**
+     * Builds the ORDER BY portion of a query from `OrderInterface` instances.
+     *
+     * @since [*next-version*]
+     *
+     * @param OrderInterface[]|Traversable $ordering The `OrderInterface` instances.
+     *
+     * @throws OutOfRangeException        If the argument contains an invalid element.
+     * @throws InternalExceptionInterface If a problem occurred while trying to get the column name for a field name.
+     *
+     * @return string The built ORDER BY query portion string, or an empty string if an empty $orders list is given.
+     */
+    abstract protected function _buildSqlOrderBy($ordering);
+
+    /**
+     * Builds the LIMIT portion of an SQL query.
+     *
+     * @since [*next-version*]
+     *
+     * @param int $limit The number of records to limit to.
+     *
+     * @throws InvalidArgumentException If the argument is not a valid integer.
+     * @throws OutOfRangeException      If the argument is a negative integer.
+     *
+     * @return string The built LIMIT query portion.
+     */
+    abstract protected function _buildSqlLimit($limit = null);
 
     /**
      * Escapes an SQL reference with an optional prefix.

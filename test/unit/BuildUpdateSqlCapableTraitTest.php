@@ -4,6 +4,7 @@ namespace RebelCode\Storage\Resource\Sql\UnitTest;
 
 use Dhii\Expression\ExpressionInterface;
 use Dhii\Expression\LogicalExpressionInterface;
+use Dhii\Storage\Resource\Sql\OrderInterface;
 use InvalidArgumentException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use RebelCode\Storage\Resource\Sql\BuildUpdateSqlCapableTrait as TestSubject;
@@ -39,6 +40,8 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
                             array_merge(
                                 $methods,
                                 [
+                                    '_buildSqlOrderBy',
+                                    '_buildSqlLimit',
                                     '_escapeSqlReference',
                                     '_renderSqlExpression',
                                     '_buildSqlWhereClause',
@@ -52,22 +55,52 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
 
         $mock = $builder->getMockForTrait();
         $mock->method('_escapeSqlReference')->willReturnCallback(
-            function ($input, $prefix) {
+            function($input, $prefix) {
                 return $input;
             }
         );
         $mock->method('__')->willReturnArgument(0);
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
-            function ($m, $c, $p) {
+            function($m, $c, $p) {
                 return new InvalidArgumentException($m, $c, $p);
             }
         );
         $mock->method('_countIterable')->willReturnCallback(
-            function ($i) {
+            function($i) {
                 return count($i);
             }
         );
         $mock->method('_normalizeString')->willReturnArgument(0);
+
+        return $mock;
+    }
+
+    /**
+     * Creates a mock OrderInterface instance.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $entity The entity.
+     * @param string $field  The field.
+     * @param bool   $isAsc  The ascending flag.
+     *
+     * @return MockObject|OrderInterface The created instance.
+     */
+    public function createOrder($entity = '', $field = '', $isAsc = true)
+    {
+        $mock = $this->getMockBuilder('Dhii\Storage\Resource\Sql\OrderInterface')
+                     ->setMethods(
+                         [
+                             'getEntity',
+                             'getField',
+                             'isAscending',
+                         ]
+                     )
+                     ->getMockForAbstractClass();
+
+        $mock->method('getEntity')->willReturn($entity);
+        $mock->method('getField')->willReturn($field);
+        $mock->method('isAscending')->willReturn($isAsc);
 
         return $mock;
     }
@@ -138,11 +171,11 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
 
         $table = 'my_table';
         $changeSet = [
-            'name' => 'foo',
+            'name'    => 'foo',
             'surname' => 'bar',
         ];
         $valueHashMap = [
-            '10' => ':123',
+            '10'  => ':123',
             'foo' => ':456',
         ];
 
@@ -157,11 +190,25 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
                 ->with($condition, $valueHashMap)
                 ->willReturn($where);
 
-        $expected = "UPDATE $table SET $set $where;";
+        $ordering = [
+            $this->createOrder(null, 'age'),
+            $this->createOrder(null, 'verified', false),
+        ];
+        $nLimit = rand(0, 50);
+        $subject->expects($this->once())
+                ->method('_buildSqlOrderBy')
+                ->with($ordering)
+                ->willReturn($orderBy = 'ORDER BY age ASC, verified DESC');
+        $subject->expects($this->once())
+                ->method('_buildSqlLimit')
+                ->with($nLimit)
+                ->willReturn($limit = 'LIMIT ' . $nLimit);
+
+        $expected = "UPDATE $table SET $set $where $orderBy $limit;";
 
         $this->assertEquals(
             $expected,
-            $reflect->_buildUpdateSql($table, $changeSet, $condition, $valueHashMap),
+            $reflect->_buildUpdateSql($table, $changeSet, $condition, $ordering, $nLimit, $valueHashMap),
             'Expected and retrieved UPDATE queries do not match.'
         );
     }
@@ -178,11 +225,11 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
 
         $table = 'my_table';
         $changeSet = [
-            'age' => $cExpr1 = $this->createExpression('plus', ['age', 1]),
+            'age'  => $cExpr1 = $this->createExpression('plus', ['age', 1]),
             'name' => $cExpr2 = $this->createExpression('string', ['foobar']),
         ];
         $valueHashMap = [
-            '1' => ':123',
+            '1'      => ':123',
             'foobar' => ':456',
         ];
 
@@ -201,7 +248,7 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
 
         $this->assertEquals(
             $expected,
-            $reflect->_buildUpdateSql($table, $changeSet, $condition, $valueHashMap),
+            $reflect->_buildUpdateSql($table, $changeSet, $condition, null, null, $valueHashMap),
             'Expected and retrieved UPDATE queries do not match.'
         );
     }
