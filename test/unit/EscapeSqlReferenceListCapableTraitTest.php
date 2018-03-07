@@ -4,8 +4,9 @@ namespace RebelCode\Storage\Resource\Sql\UnitTest;
 
 use Dhii\Util\String\StringableInterface as Stringable;
 use Dhii\Storage\Resource\Sql\EntityFieldInterface;
+use OutOfRangeException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
-use RebelCode\Storage\Resource\Sql\EscapeSqlReferencesCapableTrait as TestSubject;
+use RebelCode\Storage\Resource\Sql\EscapeSqlReferenceListCapableTrait as TestSubject;
 use Xpmock\TestCase;
 
 /**
@@ -13,14 +14,14 @@ use Xpmock\TestCase;
  *
  * @since [*next-version*]
  */
-class EscapeSqlReferencesCapableTraitTest extends TestCase
+class EscapeSqlReferenceListCapableTraitTest extends TestCase
 {
     /**
      * The class name of the test subject.
      *
      * @since [*next-version*]
      */
-    const TEST_SUBJECT_CLASSNAME = 'RebelCode\Storage\Resource\Sql\EscapeSqlReferencesCapableTrait';
+    const TEST_SUBJECT_CLASSNAME = 'RebelCode\Storage\Resource\Sql\EscapeSqlReferenceListCapableTrait';
 
     /**
      * Creates a new instance of the test subject.
@@ -58,38 +59,6 @@ class EscapeSqlReferencesCapableTraitTest extends TestCase
     }
 
     /**
-     * Creates an entity field mock instance.
-     *
-     * @since [*next-version*]
-     *
-     * @param string|Stringable $entity The entity name.
-     *
-     * @return EntityFieldInterface
-     */
-    public function createEntityAware($entity)
-    {
-        return $this->mock('Dhii\Storage\Resource\Sql\EntityAwareInterface')
-                    ->getEntity($entity)
-                    ->new();
-    }
-
-    /**
-     * Creates an entity field mock instance.
-     *
-     * @since [*next-version*]
-     *
-     * @param string|Stringable $field  The field name.
-     *
-     * @return EntityFieldInterface
-     */
-    public function createFieldAware($field)
-    {
-        return $this->mock('Dhii\Storage\Resource\Sql\FieldAwareInterface')
-                    ->getField($field)
-                    ->new();
-    }
-
-    /**
      * Tests whether a valid instance of the test subject can be created.
      *
      * @since [*next-version*]
@@ -119,10 +88,14 @@ class EscapeSqlReferencesCapableTraitTest extends TestCase
         $expected = "`$reference`";
 
         $subject->method('_normalizeArray')->willReturn([$reference]);
+        $subject->expects($this->once())
+                ->method('_escapeSqlReference')
+                ->with(null, $reference)
+                ->willReturn($expected);
 
         $this->assertEquals(
             $expected,
-            $reflect->_escapeSqlReferences($reference),
+            $reflect->_escapeSqlReferenceList([$reference]),
             'Retrieved and expected escaped references do not match.'
         );
     }
@@ -143,97 +116,37 @@ class EscapeSqlReferencesCapableTraitTest extends TestCase
         $expected = "`$entity`.`$field`";
 
         $subject->method('_normalizeArray')->willReturn([$reference]);
+        $subject->expects($this->once())
+                ->method('_escapeSqlReference')
+                ->with($entity, $field)
+                ->willReturn($expected);
 
         $this->assertEquals(
             $expected,
-            $reflect->_escapeSqlReferences($reference),
+            $reflect->_escapeSqlReferenceList([$reference]),
             'Retrieved and expected escaped references do not match.'
         );
     }
 
     /**
-     * Tests the reference escape method to assert whether an input reference entity field with a null entity is
-     * correctly escaped.
+     * Tests the reference escape method to assert whether out of range exceptions bubble up.
      *
      * @since [*next-version*]
      */
-    public function testEscapeSqlReferencesNullEntityField()
+    public function testEscapeSqlReferencesOutOfRange()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $field = uniqid('field-');
-        $reference = $this->createEntityField(null, $field);
-        $expected = "`$field`";
+        $subject->method('_normalizeArray')->willReturn(['']);
+        $subject->expects($this->once())
+                ->method('_escapeSqlReference')
+                ->with(null, '')
+                ->willThrowException(new OutOfRangeException());
 
-        $subject->method('_normalizeArray')->willReturn([$reference]);
+        $this->setExpectedException('OutOfRangeException');
 
-        $this->assertEquals(
-            $expected,
-            $reflect->_escapeSqlReferences($reference),
-            'Retrieved and expected escaped references do not match.'
-        );
-    }
-
-    /**
-     * Tests the reference escape method to assert whether an entity-aware input reference is correctly escaped.
-     *
-     * @since [*next-version*]
-     */
-    public function testEscapeSqlReferencesEntityAware()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $entity = uniqid('entity-');
-        $reference = $this->createEntityAware($entity);
-        $expected = "`$entity`";
-
-        $subject->method('_normalizeArray')->willReturn([$reference]);
-
-        $this->assertEquals(
-            $expected,
-            $reflect->_escapeSqlReferences($reference),
-            'Retrieved and expected escaped references do not match.'
-        );
-    }
-
-    /**
-     * Tests the reference escape method to assert whether a field-aware input reference is correctly escaped.
-     *
-     * @since [*next-version*]
-     */
-    public function testEscapeSqlReferencesFieldAware()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $field = uniqid('field-');
-        $reference = $this->createFieldAware($field);
-        $expected = "`$field`";
-
-        $subject->method('_normalizeArray')->willReturn([$reference]);
-
-        $this->assertEquals(
-            $expected,
-            $reflect->_escapeSqlReferences($reference),
-            'Retrieved and expected escaped references do not match.'
-        );
-    }
-
-    /**
-     * Tests the reference escape method with an empty string to assert whether the output is also empty.
-     *
-     * @since [*next-version*]
-     */
-    public function testEscapeSqlReferencesEmptyString()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $result = $reflect->_escapeSqlReferences('');
-
-        $this->assertEquals(0, strlen($result), 'Result is not empty.');
+        $reflect->_escapeSqlReferenceList(['']);
     }
 
     /**
@@ -254,10 +167,14 @@ class EscapeSqlReferencesCapableTraitTest extends TestCase
         $expected = "`$ref1`, `$ref2`, `$ref3`";
 
         $subject->method('_normalizeArray')->willReturn($references);
+        $subject->expects($this->exactly(count($references)))
+                ->method('_escapeSqlReference')
+                ->withConsecutive([null, $ref1], [null, $ref2], [null, $ref3])
+                ->willReturnOnConsecutiveCalls("`$ref1`", "`$ref2`", "`$ref3`");
 
         $this->assertEquals(
             $expected,
-            $reflect->_escapeSqlReferences($references),
+            $reflect->_escapeSqlReferenceList($references),
             'Retrieved and expected escaped reference lists do not match.'
         );
     }
@@ -278,7 +195,7 @@ class EscapeSqlReferencesCapableTraitTest extends TestCase
 
         $this->assertEquals(
             $expected,
-            $reflect->_escapeSqlReferences($references),
+            $reflect->_escapeSqlReferenceList($references),
             'Retrieved and expected escaped reference lists do not match.'
         );
     }
