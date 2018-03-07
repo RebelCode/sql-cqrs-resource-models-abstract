@@ -40,7 +40,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                                 [
                                     '_buildSqlJoinConditions',
                                     '_buildSqlWhereClause',
-                                    '_escapeSqlReferences',
+                                    '_escapeSqlReferenceList',
                                     '_createInvalidArgumentException',
                                     '__',
                                 ]
@@ -48,13 +48,9 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                         );
 
         $mock = $builder->getMockForTrait();
-        $mock->method('_escapeSqlReferences')->willReturnCallback(
+        $mock->method('_escapeSqlReferenceList')->willReturnCallback(
             function ($input) {
-                if (is_array($input)) {
-                    return implode(', ', $input);
-                }
-
-                return $input;
+                return implode(', ', $input);
             }
         );
         $mock->method('_createInvalidArgumentException')->willReturnCallback(

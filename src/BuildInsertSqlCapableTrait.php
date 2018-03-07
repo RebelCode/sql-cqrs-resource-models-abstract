@@ -3,6 +3,7 @@
 namespace RebelCode\Storage\Resource\Sql;
 
 use ArrayAccess;
+use Dhii\Storage\Resource\Sql\EntityFieldInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
@@ -44,8 +45,8 @@ trait BuildInsertSqlCapableTrait
             );
         }
 
-        $tableName   = $this->_escapeSqlReferences($table);
-        $columnsList = $this->_escapeSqlReferences($columns);
+        $tableName   = $this->_escapeSqlReference($table);
+        $columnsList = $this->_escapeSqlReferenceList($columns);
 
         $values = [];
         foreach ($records as $_rowData) {
@@ -80,15 +81,32 @@ trait BuildInsertSqlCapableTrait
     abstract protected function _buildSqlRecordValues($columns, $record, array $valueHashMap = []);
 
     /**
+     * Escapes an SQL reference with an optional prefix.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable      $reference The reference string.
+     * @param string|Stringable|null $prefix    The reference prefix, if any.
+     *
+     * @throws InvalidArgumentException If either argument is not a valid string.
+     * @throws OutOfRangeException      If an invalid string is given as argument.
+     *
+     * @return string The escaped string.
+     */
+    abstract protected function _escapeSqlReference($reference, $prefix = null);
+
+    /**
      * Escapes a reference string, or a list of reference strings, for use in SQL queries.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable|array|stdClass|Traversable $references The reference strings to escape.
+     * @param string[]|Stringable[]|EntityFieldInterface[]|Traversable $references The references to escape, as a list
+     *                                                                             of strings, stringable objects or
+     *                                                                             `EntityFieldInterface` instances.
      *
      * @return string The escaped references, as a comma separated string if a list was given.
      */
-    abstract protected function _escapeSqlReferences($references);
+    abstract protected function _escapeSqlReferenceList($references);
 
     /**
      * Creates a new Dhii invalid argument exception.

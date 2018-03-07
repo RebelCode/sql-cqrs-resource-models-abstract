@@ -39,7 +39,7 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
                             array_merge(
                                 $methods,
                                 [
-                                    '_escapeSqlReferences',
+                                    '_escapeSqlReference',
                                     '_renderSqlExpression',
                                     '_buildSqlWhereClause',
                                     '_normalizeString',
@@ -51,11 +51,9 @@ class BuildUpdateSqlCapableTraitTest extends TestCase
                         );
 
         $mock = $builder->getMockForTrait();
-        $mock->method('_escapeSqlReferences')->willReturnCallback(
-            function ($input) {
-                return is_array($input)
-                    ? implode(', ', $input)
-                    : $input;
+        $mock->method('_escapeSqlReference')->willReturnCallback(
+            function ($input, $prefix) {
+                return $input;
             }
         );
         $mock->method('__')->willReturnArgument(0);

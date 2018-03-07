@@ -8,7 +8,7 @@ use Dhii\Output\Exception\RendererExceptionInterface;
 use Dhii\Output\Exception\TemplateRenderExceptionInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use InvalidArgumentException;
-use stdClass;
+use OutOfRangeException;
 use Traversable;
 
 /**
@@ -33,7 +33,7 @@ trait BuildSqlJoinsCapableTrait
         $joins = [];
 
         foreach ($joinConditions as $_table => $_condition) {
-            $_escTable   = $this->_escapeSqlReferences($_table);
+            $_escTable   = $this->_escapeSqlReference($_table);
             $_rCondition = $this->_renderSqlCondition($_condition, $valueHashMap);
             $_joinType   = $this->_getSqlJoinType($_condition);
             $joins []    = sprintf('%1$s JOIN %2$s ON %3$s', $_joinType, $_escTable, $_rCondition);
@@ -69,15 +69,19 @@ trait BuildSqlJoinsCapableTrait
     abstract protected function _renderSqlCondition(LogicalExpressionInterface $condition, array $valueHashMap = []);
 
     /**
-     * Escapes a reference string, or a list of reference strings, for use in SQL queries.
+     * Escapes an SQL reference with an optional prefix.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable|array|stdClass|Traversable $references The reference strings to escape.
+     * @param string|Stringable      $reference The reference string.
+     * @param string|Stringable|null $prefix    The reference prefix, if any.
      *
-     * @return string The escaped references, as a comma separated string if a list was given.
+     * @throws InvalidArgumentException If either argument is not a valid string.
+     * @throws OutOfRangeException      If an invalid string is given as argument.
+     *
+     * @return string The escaped string.
      */
-    abstract protected function _escapeSqlReferences($references);
+    abstract protected function _escapeSqlReference($reference, $prefix = null);
 
     /**
      * Normalizes a value to its string representation.

@@ -36,7 +36,7 @@ class BuildSqlJoinsCapableTraitTest extends TestCase
                             [
                                 '_getSqlJoinType',
                                 '_renderSqlCondition',
-                                '_escapeSqlReferences',
+                                '_escapeSqlReference',
                                 '_normalizeString',
                             ]
                         );
@@ -47,8 +47,8 @@ class BuildSqlJoinsCapableTraitTest extends TestCase
                 return strval($input);
             }
         );
-        $mock->method('_escapeSqlReferences')->willReturnCallback(
-            function ($input) {
+        $mock->method('_escapeSqlReference')->willReturnCallback(
+            function ($input, $prefix) {
                 return sprintf('`%s`', $input);
             }
         );

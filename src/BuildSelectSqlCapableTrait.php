@@ -3,6 +3,7 @@
 namespace RebelCode\Storage\Resource\Sql;
 
 use Dhii\Expression\LogicalExpressionInterface;
+use Dhii\Storage\Resource\Sql\EntityFieldInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
@@ -46,10 +47,10 @@ trait BuildSelectSqlCapableTrait
         }
 
         $columnList = (count($columns) > 0)
-            ? $this->_escapeSqlReferences($columns)
+            ? $this->_escapeSqlReferenceList($columns)
             : '*';
 
-        $tableList = $this->_escapeSqlReferences($tables);
+        $tableList = $this->_escapeSqlReferenceList($tables);
         $joins     = $this->_buildSqlJoins($joinConditions, $valueHashMap);
         $where     = $this->_buildSqlWhereClause($whereCondition, $valueHashMap);
 
@@ -96,11 +97,13 @@ trait BuildSelectSqlCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable|array|stdClass|Traversable $references The reference strings to escape.
+     * @param string[]|Stringable[]|EntityFieldInterface[]|Traversable $references The references to escape, as a list
+     *                                                                             of strings, stringable objects or
+     *                                                                             `EntityFieldInterface` instances.
      *
      * @return string The escaped references, as a comma separated string if a list was given.
      */
-    abstract protected function _escapeSqlReferences($references);
+    abstract protected function _escapeSqlReferenceList($references);
 
     /**
      * Creates a new Dhii invalid argument exception.
