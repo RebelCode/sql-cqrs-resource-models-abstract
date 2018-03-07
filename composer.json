@@ -22,7 +22,9 @@
         "dhii/stringable-interface": "^0.1",
         "dhii/expression-interface": "^0.2",
         "dhii/output-renderer-interface": "^0.3",
-        "dhii/sql-interface": "^0.1"
+        "dhii/sql-interface": "^0.1",
+        "dhii/data-container-interface": "^0.2",
+        "dhii/exception-interface": "0.2-alpha3"
     },
     "autoload": {
         "psr-4": {
