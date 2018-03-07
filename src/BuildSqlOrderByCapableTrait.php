@@ -21,27 +21,27 @@ trait BuildSqlOrderByCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param OrderInterface[]|Traversable $orders The `OrderInterface` instances.
+     * @param OrderInterface[]|Traversable $ordering The `OrderInterface` instances.
      *
      * @return string The built ORDER BY query portion string, or an empty string if an empty $orders list is given.
      */
-    protected function _buildSqlOrderBy($orders)
+    protected function _buildSqlOrderBy($ordering)
     {
         $orderParts = [];
 
-        foreach ($orders as $_order) {
+        foreach ($ordering as $_order) {
             if (!($_order instanceof OrderInterface)) {
                 throw $this->_createOutOfRangeException(
                     $this->__('Argument contains a non-OrderInterface element'),
                     null,
                     null,
-                    $orders
+                    $ordering
                 );
             }
 
             $entity = $_order->getEntity();
-            $field = $_order->getField();
-            $mode = $_order->isAscending()
+            $field  = $_order->getField();
+            $mode   = $_order->isAscending()
                 ? 'ASC'
                 : 'DESC';
 
@@ -52,7 +52,7 @@ trait BuildSqlOrderByCapableTrait
                     $this->__('Argument contains an OrderInterface element with invalid entity field information'),
                     null,
                     $invalidArgumentException,
-                    $orders
+                    $ordering
                 );
             }
 
@@ -74,10 +74,10 @@ trait BuildSqlOrderByCapableTrait
      * @param string|Stringable|null $entity The reference entity name, if any.
      * @param string|Stringable      $field  The reference field name.
      *
-     * @return string The escaped string.
-     *
      * @throws InvalidArgumentException If either argument is not a valid string.
-     * @throws OutOfRangeException If an invalid string is given as argument.
+     * @throws OutOfRangeException      If an invalid string is given as argument.
+     *
+     * @return string The escaped string.
      */
     abstract protected function _escapeSqlReference($entity, $field);
 
