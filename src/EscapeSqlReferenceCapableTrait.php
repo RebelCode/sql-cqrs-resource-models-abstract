@@ -15,50 +15,38 @@ use Exception as RootException;
 trait EscapeSqlReferenceCapableTrait
 {
     /**
-     * Escapes an SQL reference, optionally scoped to a particular entity.
+     * Escapes an SQL reference with an optional prefix.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable|null $entity The reference entity name, if any.
-     * @param string|Stringable      $field  The reference field name.
-     *
-     * @return string The escaped string.
+     * @param string|Stringable      $reference The reference string.
+     * @param string|Stringable|null $prefix    The reference prefix, if any.
      *
      * @throws InvalidArgumentException If either argument is not a valid string.
-     * @throws OutOfRangeException If an invalid string is given as argument.
+     * @throws OutOfRangeException      If an invalid string is given as argument.
+     *
+     * @return string The escaped string.
      */
-    protected function _escapeSqlReference($entity, $field)
+    protected function _escapeSqlReference($reference, $prefix = null)
     {
-        if ($entity !== null && strlen($entity) === 0) {
+        if ($reference !== null && strlen($reference) === 0) {
             throw $this->_createOutOfRangeException(
-                $this->__('Entity argument cannot be an empty string'),
+                $this->__('Reference string cannot be an empty'),
                 null,
                 null,
-                $entity
+                $reference
             );
         }
 
-        if ($field !== null && strlen($field) === 0) {
-            throw $this->_createOutOfRangeException(
-                $this->__('Field argument cannot be an empty string'),
-                null,
-                null,
-                $field
-            );
+        $escResult = sprintf('`%s`', $this->_normalizeString($reference));
+
+        // If prefix given, escape and add to result
+        if ($prefix !== null && strlen($prefix)) {
+            $escPrefix = sprintf('`%s`', $this->_normalizeString($prefix));
+            $escResult = sprintf('%1$s.%2$s', $escPrefix, $escResult);
         }
 
-        $entity = ($entity !== null)
-            ? sprintf('`%s`', $this->_normalizeString($entity))
-            : null;
-
-        $field = sprintf('`%s`', $this->_normalizeString($field));
-
-        // If entity given, yield the combined escaped strings
-        if ($entity !== null && $field !== null) {
-            return sprintf('%1$s.%2$s', $entity, $field);
-        }
-
-        return $field;
+        return $escResult;
     }
 
     /**

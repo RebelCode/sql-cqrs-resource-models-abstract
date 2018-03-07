@@ -38,7 +38,7 @@ trait EscapeSqlReferenceListCapableTrait
             : $this->_normalizeArray($references);
 
         $array = array_map(
-            function($arg) {
+            function ($arg) {
                 $entity = null;
                 $field = $arg;
 
@@ -47,7 +47,7 @@ trait EscapeSqlReferenceListCapableTrait
                     $field = $arg->getField();
                 }
 
-                return $this->_escapeSqlReference($entity, $field);
+                return $this->_escapeSqlReference($field, $entity);
             },
             $array
         );
@@ -69,17 +69,17 @@ trait EscapeSqlReferenceListCapableTrait
     abstract protected function _normalizeArray($value);
 
     /**
-     * Escapes an SQL reference, optionally scoped to a particular entity.
+     * Escapes an SQL reference with an optional prefix.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable|null $entity The reference entity name, if any.
-     * @param string|Stringable      $field  The reference field name.
-     *
-     * @return string The escaped string.
+     * @param string|Stringable      $reference The reference string.
+     * @param string|Stringable|null $prefix    The reference prefix, if any.
      *
      * @throws InvalidArgumentException If either argument is not a valid string.
-     * @throws OutOfRangeException If an invalid string is given as argument.
+     * @throws OutOfRangeException      If an invalid string is given as argument.
+     *
+     * @return string The escaped string.
      */
-    abstract protected function _escapeSqlReference($entity, $field);
+    abstract protected function _escapeSqlReference($reference, $prefix = null);
 }

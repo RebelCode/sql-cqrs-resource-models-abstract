@@ -2,6 +2,7 @@
 
 namespace RebelCode\Storage\Resource\Sql\UnitTest;
 
+use Dhii\Util\String\StringableInterface;
 use InvalidArgumentException;
 use OutOfRangeException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
@@ -52,6 +53,26 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
     }
 
     /**
+     * Creates a mock stringable object instance.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $string The string the object should return when cast to string.
+     *
+     * @return MockObject|StringableInterface The created stringable object.
+     */
+    public function createStringable($string)
+    {
+        $mock = $this->getMockBuilder('Dhii\Util\String\StringableInterface')
+                     ->setMethods(['__toString'])
+                     ->getMockForAbstractClass();
+
+        $mock->method('__toString')->willReturn($string);
+
+        return $mock;
+    }
+
+    /**
      * Tests whether a valid instance of the test subject can be created.
      *
      * @since [*next-version*]
@@ -68,82 +89,93 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests the reference escape method to assert whether a field input string with no entity is correctly escaped.
+     * Tests the reference escape method to assert whether an input string with no prefix is correctly escaped.
      *
      * @since [*next-version*]
      */
-    public function testEscapeSqlReferenceFieldString()
+    public function testEscapeSqlReferenceString()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $field = uniqid('ref-');
-        $expected = "`$field`";
+        $reference = uniqid('ref-');
+        $expected = "`$reference`";
 
-        $subject->method('_normalizeString')->willReturn($field);
+        $subject->method('_normalizeString')->willReturn($reference);
 
         $this->assertEquals(
             $expected,
-            $reflect->_escapeSqlReference(null, $field),
+            $reflect->_escapeSqlReference($reference),
             'Retrieved and expected escaped references do not match.'
         );
     }
 
     /**
-     * Tests the reference escape method to assert whether a field input string with an entity is correctly escaped.
+     * Tests the reference escape method to assert whether a stringable object is correctly normalized and escaped.
      *
      * @since [*next-version*]
      */
-    public function testEscapeSqlReferencesEntityField()
+    public function testEscapeSqlReferenceStringable()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $entity = uniqid('entity-');
-        $field = uniqid('field-');
-        $expected = "`$entity`.`$field`";
+        $reference = uniqid('ref-');
+        $arg = $this->createStringable($reference);
+        $expected = "`$reference`";
 
-        $subject->method('_normalizeString')->willReturnOnConsecutiveCalls($entity, $field);
+        $subject->expects($this->once())
+                ->method('_normalizeString')
+                ->with($arg)
+                ->willReturn($reference);
 
         $this->assertEquals(
             $expected,
-            $reflect->_escapeSqlReference($entity, $field),
+            $reflect->_escapeSqlReference($arg),
             'Retrieved and expected escaped references do not match.'
         );
     }
 
     /**
-     * Tests the reference escape method to assert whether an empty entity string throws the correct exception.
+     * Tests the reference escape method to assert whether an input string with a prefix is correctly escaped.
      *
      * @since [*next-version*]
      */
-    public function testEscapeSqlReferencesEmptyEntityString()
+    public function testEscapeSqlReferencesWithPrefix()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $prefix = uniqid('prefix-');
+        $reference = uniqid('reference-');
+        $expected = "`$prefix`.`$reference`";
+
+        $subject->method('_normalizeString')->willReturnArgument(0);
+
+        $this->assertEquals(
+            $expected,
+            $reflect->_escapeSqlReference($reference, $prefix),
+            'Retrieved and expected escaped references do not match.'
+        );
+    }
+
+    /**
+     * Tests the reference escape method to assert whether an empty input string throws the correct exception.
+     *
+     * @since [*next-version*]
+     */
+    public function testEscapeSqlReferencesEmptyString()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
         $this->setExpectedException('OutOfRangeException');
 
-        $reflect->_escapeSqlReference('', '');
+        $reflect->_escapeSqlReference('');
     }
 
     /**
-     * Tests the reference escape method to assert whether an empty field string throws the correct exception.
-     *
-     * @since [*next-version*]
-     */
-    public function testEscapeSqlReferencesEmptyFieldString()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $this->setExpectedException('OutOfRangeException');
-
-        $reflect->_escapeSqlReference(uniqid('entity-'), '');
-    }
-
-    /**
-     * Tests the reference escape method to assert whether an empty field string throws the correct exception.
+     * Tests the reference escape method to assert whether an empty input string throws the correct exception.
      *
      * @since [*next-version*]
      */
@@ -156,6 +188,6 @@ class EscapeSqlReferenceCapableTraitTest extends TestCase
 
         $this->setExpectedException('InvalidArgumentException');
 
-        $reflect->_escapeSqlReference(null, null);
+        $reflect->_escapeSqlReference(null);
     }
 }

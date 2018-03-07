@@ -90,7 +90,7 @@ class EscapeSqlReferenceListCapableTraitTest extends TestCase
         $subject->method('_normalizeArray')->willReturn([$reference]);
         $subject->expects($this->once())
                 ->method('_escapeSqlReference')
-                ->with(null, $reference)
+                ->with($reference, null)
                 ->willReturn($expected);
 
         $this->assertEquals(
@@ -118,7 +118,7 @@ class EscapeSqlReferenceListCapableTraitTest extends TestCase
         $subject->method('_normalizeArray')->willReturn([$reference]);
         $subject->expects($this->once())
                 ->method('_escapeSqlReference')
-                ->with($entity, $field)
+                ->with($field, $entity)
                 ->willReturn($expected);
 
         $this->assertEquals(
@@ -141,7 +141,7 @@ class EscapeSqlReferenceListCapableTraitTest extends TestCase
         $subject->method('_normalizeArray')->willReturn(['']);
         $subject->expects($this->once())
                 ->method('_escapeSqlReference')
-                ->with(null, '')
+                ->with('', null)
                 ->willThrowException(new OutOfRangeException());
 
         $this->setExpectedException('OutOfRangeException');
@@ -169,7 +169,7 @@ class EscapeSqlReferenceListCapableTraitTest extends TestCase
         $subject->method('_normalizeArray')->willReturn($references);
         $subject->expects($this->exactly(count($references)))
                 ->method('_escapeSqlReference')
-                ->withConsecutive([null, $ref1], [null, $ref2], [null, $ref3])
+                ->withConsecutive([$ref1, null], [$ref2, null], [$ref3, null])
                 ->willReturnOnConsecutiveCalls("`$ref1`", "`$ref2`", "`$ref3`");
 
         $this->assertEquals(
