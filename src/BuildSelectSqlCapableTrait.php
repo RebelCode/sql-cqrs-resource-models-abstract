@@ -2,11 +2,14 @@
 
 namespace RebelCode\Storage\Resource\Sql;
 
+use Dhii\Exception\InternalExceptionInterface;
 use Dhii\Expression\LogicalExpressionInterface;
 use Dhii\Storage\Resource\Sql\EntityFieldInterface;
+use Dhii\Storage\Resource\Sql\OrderInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
+use OutOfRangeException;
 use Traversable;
 
 /**
@@ -21,11 +24,17 @@ trait BuildSelectSqlCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param string[]|Stringable[]           $columns        A list of names of columns to select.
-     * @param array                           $tables         A list of names of tables to select from.
-     * @param LogicalExpressionInterface[]    $joinConditions Optional list of JOIN conditions, keyed by table name.
-     * @param LogicalExpressionInterface|null $whereCondition Optional WHERE condition.
-     * @param array                           $valueHashMap   Optional map of value names and their hashes.
+     * @param string[]|Stringable[]             $columns        A list of names of columns to select.
+     * @param array                             $tables         A list of names of tables to select from.
+     * @param LogicalExpressionInterface[]      $joinConditions Optional list of JOIN conditions, keyed by table name.
+     * @param LogicalExpressionInterface|null   $whereCondition Optional WHERE condition.
+     * @param OrderInterface[]|Traversable|null $ordering       The ordering, as a list of OrderInterface instances.
+     * @param int|null                          $limit          The number of records to limit the query to.
+     * @param int|null                          $offset         The number of records to offset by, zero-based.
+     * @param array                             $valueHashMap   Optional map of value names and their hashes.
+     *
+     * @throws InvalidArgumentException If an argument is invalid.
+     * @throws OutOfRangeException      If the limit or offset are invalid numbers.
      *
      * @return string The built SQL query string.
      */
@@ -34,6 +43,9 @@ trait BuildSelectSqlCapableTrait
         array $tables,
         array $joinConditions = [],
         LogicalExpressionInterface $whereCondition = null,
+        $ordering = null,
+        $limit = null,
+        $offset = null,
         array $valueHashMap = []
     ) {
         if (count($tables) === 0) {
@@ -50,15 +62,25 @@ trait BuildSelectSqlCapableTrait
             : '*';
 
         $tableList = $this->_escapeSqlReferenceList($tables);
-        $joins     = $this->_buildSqlJoins($joinConditions, $valueHashMap);
-        $where     = $this->_buildSqlWhereClause($whereCondition, $valueHashMap);
+        $joins = $this->_buildSqlJoins($joinConditions, $valueHashMap);
+        $where = $this->_buildSqlWhereClause($whereCondition, $valueHashMap);
 
+        $sOrder = ($ordering !== null)
+            ? $this->_buildSqlOrderBy($ordering)
+            : '';
+        $sLimit = ($limit !== null)
+            ? $this->_buildSqlLimit($limit)
+            : '';
+        $sOffset = ($limit !== null && $offset !== null)
+            ? $this->_buildSqlOffset($offset)
+            : '';
+
+        $parts = array_filter([$tableList, $joins, $where, $sOrder, $sLimit, $sOffset], 'strlen');
+        $tail = implode(' ', $parts);
         $query = sprintf(
-            'SELECT %1$s FROM %2$s %3$s %4$s;',
+            'SELECT %1$s FROM %2$s;',
             $columnList,
-            $tableList,
-            $joins,
-            $where
+            $tail
         );
 
         return $query;
@@ -90,6 +112,48 @@ trait BuildSelectSqlCapableTrait
         LogicalExpressionInterface $condition = null,
         array $valueHashMap = []
     );
+
+    /**
+     * Builds the ORDER BY portion of a query from `OrderInterface` instances.
+     *
+     * @since [*next-version*]
+     *
+     * @param OrderInterface[]|Traversable $ordering The `OrderInterface` instances.
+     *
+     * @throws OutOfRangeException        If the argument contains an invalid element.
+     * @throws InternalExceptionInterface If a problem occurred while trying to get the column name for a field name.
+     *
+     * @return string The built ORDER BY query portion string, or an empty string if an empty $orders list is given.
+     */
+    abstract protected function _buildSqlOrderBy($ordering);
+
+    /**
+     * Builds the LIMIT portion of an SQL query.
+     *
+     * @since [*next-version*]
+     *
+     * @param int $limit The number of records to limit to.
+     *
+     * @throws InvalidArgumentException If the argument is not a valid integer.
+     * @throws OutOfRangeException      If the argument is a negative integer.
+     *
+     * @return string The built LIMIT query portion.
+     */
+    abstract protected function _buildSqlLimit($limit = null);
+
+    /**
+     * Builds the OFFSET portion of an SQL query.
+     *
+     * @since [*next-version*]
+     *
+     * @param int $offset The number of records to offset by.
+     *
+     * @throws InvalidArgumentException If the argument is not a valid integer.
+     * @throws OutOfRangeException      If the argument is a negative integer.
+     *
+     * @return string The built OFFSET query portion.
+     */
+    abstract protected function _buildSqlOffset($offset = null);
 
     /**
      * Escapes a reference string, or a list of reference strings, for use in SQL queries.

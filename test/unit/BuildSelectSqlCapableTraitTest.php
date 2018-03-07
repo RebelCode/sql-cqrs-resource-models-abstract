@@ -40,6 +40,9 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                                 [
                                     '_buildSqlJoinConditions',
                                     '_buildSqlWhereClause',
+                                    '_buildSqlOrderBy',
+                                    '_buildSqlLimit',
+                                    '_buildSqlOffset',
                                     '_escapeSqlReferenceList',
                                     '_createInvalidArgumentException',
                                     '__',
@@ -49,12 +52,12 @@ class BuildSelectSqlCapableTraitTest extends TestCase
 
         $mock = $builder->getMockForTrait();
         $mock->method('_escapeSqlReferenceList')->willReturnCallback(
-            function ($input) {
+            function($input) {
                 return implode(', ', $input);
             }
         );
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
-            function ($m, $c, $p) {
+            function($m, $c, $p) {
                 return new InvalidArgumentException($m, $c, $p);
             }
         );
@@ -115,7 +118,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $columnsList = 'id, name, age';
 
         $valueHashMap = [
-            '18' => ':12345',
+            '18'    => ':12345',
             'false' => ':56789',
         ];
 
@@ -133,7 +136,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->willReturn($where);
 
         $joinConditions = [
-            'posts' => $this->createLogicalExpression(
+            'posts'     => $this->createLogicalExpression(
                 'equals',
                 [
                     $this->createLogicalExpression('table_column', ['test', 'id']),
@@ -155,7 +158,16 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->willReturn($joins);
 
         $expected = "SELECT $columnsList FROM $tablesList $joins $where;";
-        $result = $reflect->_buildSelectSql($columns, $tables, $joinConditions, $condition, $valueHashMap);
+        $result = $reflect->_buildSelectSql(
+            $columns,
+            $tables,
+            $joinConditions,
+            $condition,
+            null,
+            null,
+            null,
+            $valueHashMap
+        );
 
         $this->assertEquals($expected, $result, 'Expected and retrieved queries do not match.');
     }
@@ -177,7 +189,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $columnsList = 'id, name, age';
 
         $valueHashMap = [
-            '18' => ':12345',
+            '18'    => ':12345',
             'false' => ':56789',
         ];
 
@@ -195,14 +207,22 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->willReturn($where);
 
         $joinConditions = [];
-        $joins = '';
         $subject->expects($this->once())
                 ->method('_buildSqlJoins')
                 ->with($joinConditions, $valueHashMap)
-                ->willReturn($joins);
+                ->willReturn('');
 
-        $expected = "SELECT $columnsList FROM $tablesList $joins $where;";
-        $result = $reflect->_buildSelectSql($columns, $tables, $joinConditions, $condition, $valueHashMap);
+        $expected = "SELECT $columnsList FROM $tablesList $where;";
+        $result = $reflect->_buildSelectSql(
+            $columns,
+            $tables,
+            $joinConditions,
+            $condition,
+            null,
+            null,
+            null,
+            $valueHashMap
+        );
 
         $this->assertEquals($expected, $result, 'Expected and retrieved queries do not match.');
     }
@@ -224,19 +244,18 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $columnsList = 'id, name, age';
 
         $valueHashMap = [
-            '18' => ':12345',
+            '18'    => ':12345',
             'false' => ':56789',
         ];
 
         $condition = null;
-        $where = '';
         $subject->expects($this->once())
                 ->method('_buildSqlWhereClause')
                 ->with($condition, $valueHashMap)
-                ->willReturn($where);
+                ->willReturn('');
 
         $joinConditions = [
-            'posts' => $this->createLogicalExpression(
+            'posts'     => $this->createLogicalExpression(
                 'equals',
                 [
                     $this->createLogicalExpression('table_column', ['test', 'id']),
@@ -257,8 +276,17 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->with($joinConditions, $valueHashMap)
                 ->willReturn($joins);
 
-        $expected = "SELECT $columnsList FROM $tablesList $joins $where;";
-        $result = $reflect->_buildSelectSql($columns, $tables, $joinConditions, $condition, $valueHashMap);
+        $expected = "SELECT $columnsList FROM $tablesList $joins;";
+        $result = $reflect->_buildSelectSql(
+            $columns,
+            $tables,
+            $joinConditions,
+            $condition,
+            null,
+            null,
+            null,
+            $valueHashMap
+        );
 
         $this->assertEquals($expected, $result, 'Expected and retrieved queries do not match.');
     }
@@ -281,21 +309,28 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $valueHashMap = [];
 
         $condition = null;
-        $where = '';
         $subject->expects($this->once())
                 ->method('_buildSqlWhereClause')
                 ->with($condition, $valueHashMap)
-                ->willReturn($where);
+                ->willReturn('');
 
         $joinConditions = [];
-        $joins = '';
         $subject->expects($this->once())
                 ->method('_buildSqlJoins')
                 ->with($joinConditions, $valueHashMap)
-                ->willReturn($joins);
+                ->willReturn('');
 
-        $expected = "SELECT $columnsList FROM $tablesList $joins $where;";
-        $result = $reflect->_buildSelectSql($columns, $tables, $joinConditions, $condition, $valueHashMap);
+        $expected = "SELECT $columnsList FROM $tablesList;";
+        $result = $reflect->_buildSelectSql(
+            $columns,
+            $tables,
+            $joinConditions,
+            $condition,
+            null,
+            null,
+            null,
+            $valueHashMap
+        );
 
         $this->assertEquals($expected, $result, 'Expected and retrieved queries do not match.');
     }
@@ -318,21 +353,28 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $valueHashMap = [];
 
         $condition = null;
-        $where = '';
         $subject->expects($this->once())
                 ->method('_buildSqlWhereClause')
                 ->with($condition, $valueHashMap)
-                ->willReturn($where);
+                ->willReturn('');
 
         $joinConditions = [];
-        $joins = '';
         $subject->expects($this->once())
                 ->method('_buildSqlJoins')
                 ->with($joinConditions, $valueHashMap)
-                ->willReturn($joins);
+                ->willReturn('');
 
-        $expected = "SELECT $columnsList FROM $tablesList $joins $where;";
-        $result = $reflect->_buildSelectSql($columns, $tables, $joinConditions, $condition, $valueHashMap);
+        $expected = "SELECT $columnsList FROM $tablesList;";
+        $result = $reflect->_buildSelectSql(
+            $columns,
+            $tables,
+            $joinConditions,
+            $condition,
+            null,
+            null,
+            null,
+            $valueHashMap
+        );
 
         $this->assertEquals($expected, $result, 'Expected and retrieved queries do not match.');
     }
@@ -361,6 +403,16 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         ];
 
         $this->setExpectedException('InvalidArgumentException');
-        $result = $reflect->_buildSelectSql($columns, $tables, $joinConditions, $condition, $columnMap, $valueHashMap);
+        $reflect->_buildSelectSql(
+            $columns,
+            $tables,
+            $joinConditions,
+            $condition,
+            null,
+            null,
+            null,
+            $columnMap,
+            $valueHashMap
+        );
     }
 }
