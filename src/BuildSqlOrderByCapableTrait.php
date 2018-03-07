@@ -25,7 +25,7 @@ trait BuildSqlOrderByCapableTrait
      *
      * @param OrderInterface[]|Traversable $ordering The `OrderInterface` instances.
      *
-     * @throws OutOfRangeException If the argument contains an invalid element.
+     * @throws OutOfRangeException        If the argument contains an invalid element.
      * @throws InternalExceptionInterface If a problem occurred while trying to get the column name for a field name.
      *
      * @return string The built ORDER BY query portion string, or an empty string if an empty $orders list is given.
@@ -45,7 +45,7 @@ trait BuildSqlOrderByCapableTrait
             }
 
             $entity = $_order->getEntity();
-            $field = $_order->getField();
+            $field  = $_order->getField();
             try {
                 $column = $this->_getSqlColumnName($field);
             } catch (OutOfBoundsException $outOfBoundsException) {
@@ -83,8 +83,8 @@ trait BuildSqlOrderByCapableTrait
      *
      * @param string|Stringable $fieldName The field name.
      *
-     * @throws InvalidArgumentException If the field name is not a valid string.
-     * @throws OutOfBoundsException If no column name could be found for the given field name.
+     * @throws InvalidArgumentException   If the field name is not a valid string.
+     * @throws OutOfBoundsException       If no column name could be found for the given field name.
      * @throws InternalExceptionInterface If a problem occurred while trying to retrieve the column name.
      *
      * @return string|Stringable The column name.

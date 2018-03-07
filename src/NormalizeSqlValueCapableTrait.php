@@ -23,9 +23,9 @@ trait NormalizeSqlValueCapableTrait
      * @param string|Stringable|null           $column Optional column name, used for normalizing for a specific
      *                                                 column's type.
      *
-     * @return string The normalized value.
-     *
      * @throws OutOfRangeException If the value cannot be normalized.
+     *
+     * @return string The normalized value.
      */
     protected function _normalizeSqlValue($value, $column = null)
     {

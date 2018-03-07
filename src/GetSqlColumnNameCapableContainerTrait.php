@@ -29,8 +29,8 @@ trait GetSqlColumnNameCapableContainerTrait
      *
      * @param string|Stringable $fieldName The field name.
      *
-     * @throws InvalidArgumentException If the field name is not a valid string.
-     * @throws OutOfBoundsException If no column name could be found for the given field name.
+     * @throws InvalidArgumentException   If the field name is not a valid string.
+     * @throws OutOfBoundsException       If no column name could be found for the given field name.
      * @throws InternalExceptionInterface If a problem occurred while trying to retrieve the column name.
      *
      * @return string|Stringable The column name.

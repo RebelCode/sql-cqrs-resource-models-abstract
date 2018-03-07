@@ -29,10 +29,10 @@ trait BuildDeleteSqlCapableTrait
      * @param int|null                          $offset       The number of records to offset by, zero-based.
      * @param string[]|Stringable[]             $valueHashMap The mapping of term names to their hashes
      *
-     * @return string The built DELETE query.
-     *
      * @throws InvalidArgumentException If an argument is invalid.
-     * @throws OutOfRangeException If the limit or offset are invalid numbers.
+     * @throws OutOfRangeException      If the limit or offset are invalid numbers.
+     *
+     * @return string The built DELETE query.
      */
     protected function _buildDeleteSql(
         $table,
@@ -83,7 +83,7 @@ trait BuildDeleteSqlCapableTrait
      *
      * @param OrderInterface[]|Traversable $ordering The `OrderInterface` instances.
      *
-     * @throws OutOfRangeException If the argument contains an invalid element.
+     * @throws OutOfRangeException        If the argument contains an invalid element.
      * @throws InternalExceptionInterface If a problem occurred while trying to get the column name for a field name.
      *
      * @return string The built ORDER BY query portion string, or an empty string if an empty $orders list is given.
