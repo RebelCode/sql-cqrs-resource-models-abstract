@@ -3,6 +3,7 @@
 namespace RebelCode\Storage\Resource\Sql\UnitTest;
 
 use Dhii\Expression\LogicalExpressionInterface;
+use Dhii\Storage\Resource\Sql\OrderInterface;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use RebelCode\Storage\Resource\Sql\BuildDeleteSqlCapableTrait as TestSubject;
 use Xpmock\TestCase;
@@ -37,6 +38,9 @@ class BuildDeleteSqlCapableTraitTest extends TestCase
                             array_merge(
                                 $methods,
                                 [
+                                    '_buildSqlOrderBy',
+                                    '_buildSqlLimit',
+                                    '_buildSqlOffset',
                                     '_escapeSqlReference',
                                     '_buildSqlWhereClause',
                                 ]
@@ -45,6 +49,36 @@ class BuildDeleteSqlCapableTraitTest extends TestCase
 
         $mock = $builder->getMockForTrait();
         $mock->method('_escapeSqlReferences')->willReturnArgument(0);
+
+        return $mock;
+    }
+
+    /**
+     * Creates a mock OrderInterface instance.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $entity The entity.
+     * @param string $field  The field.
+     * @param bool   $isAsc  The ascending flag.
+     *
+     * @return MockObject|OrderInterface The created instance.
+     */
+    public function createOrder($entity = '', $field = '', $isAsc = true)
+    {
+        $mock = $this->getMockBuilder('Dhii\Storage\Resource\Sql\OrderInterface')
+                     ->setMethods(
+                         [
+                             'getEntity',
+                             'getField',
+                             'isAscending',
+                         ]
+                     )
+                     ->getMockForAbstractClass();
+
+        $mock->method('getEntity')->willReturn($entity);
+        $mock->method('getField')->willReturn($field);
+        $mock->method('isAscending')->willReturn($isAsc);
 
         return $mock;
     }
@@ -102,22 +136,45 @@ class BuildDeleteSqlCapableTraitTest extends TestCase
                 $this->createLogicalExpression('equals', ['verified', false]),
             ]
         );
+        $ordering = [
+            $this->createOrder(null, 'age'),
+            $this->createOrder(null, 'verified', false),
+        ];
+        $nLimit = rand(0, 50);
+        $nOffset = rand(50, 100);
         $valueHashMap = [
             '18' => ':12345',
             'verified' => ':56789',
         ];
         $where = 'WHERE `user_age` < :12345 OR `acc_verified` = :56789';
+
         $subject->expects($this->once())
                 ->method('_buildSqlWhereClause')
                 ->with($condition, $valueHashMap)
                 ->willReturn($where);
+        $subject->expects($this->once())
+                ->method('_buildSqlOrderBy')
+                ->with($ordering)
+                ->willReturn($orderBy = 'ORDER BY age ASC, verified DESC');
+        $subject->expects($this->once())
+                ->method('_buildSqlLimit')
+                ->with($nLimit)
+                ->willReturn($limit = 'LIMIT ' . $nLimit);
+        $subject->expects($this->once())
+                ->method('_buildSqlOffset')
+                ->with($nOffset)
+                ->willReturn($offset = 'OFFSET ' . $nOffset);
+        $subject->method('_escapeSqlReference')->willReturnArgument(0);
 
         $table = uniqid('table');
-        $expected = "DELETE FROM $table $where;";
+        $expected = "DELETE FROM $table $where $orderBy $limit $offset;";
 
         $result = $reflect->_buildDeleteSql(
             $table,
             $condition,
+            $ordering,
+            $nLimit,
+            $nOffset,
             $valueHashMap
         );
 
