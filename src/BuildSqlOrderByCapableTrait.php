@@ -2,9 +2,11 @@
 
 namespace RebelCode\Storage\Resource\Sql;
 
+use Dhii\Exception\InternalExceptionInterface;
 use Dhii\Storage\Resource\Sql\OrderInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use InvalidArgumentException;
+use OutOfBoundsException;
 use OutOfRangeException;
 use Traversable;
 use Exception as RootException;
@@ -23,6 +25,9 @@ trait BuildSqlOrderByCapableTrait
      *
      * @param OrderInterface[]|Traversable $ordering The `OrderInterface` instances.
      *
+     * @throws OutOfRangeException If the argument contains an invalid element.
+     * @throws InternalExceptionInterface If a problem occurred while trying to get the column name for a field name.
+     *
      * @return string The built ORDER BY query portion string, or an empty string if an empty $orders list is given.
      */
     protected function _buildSqlOrderBy($ordering)
@@ -40,13 +45,18 @@ trait BuildSqlOrderByCapableTrait
             }
 
             $entity = $_order->getEntity();
-            $field  = $_order->getField();
-            $mode   = $_order->isAscending()
+            $field = $_order->getField();
+            try {
+                $column = $this->_getSqlColumnName($field);
+            } catch (OutOfBoundsException $outOfBoundsException) {
+                $column = $field;
+            }
+            $mode = $_order->isAscending()
                 ? 'ASC'
                 : 'DESC';
 
             try {
-                $entityField = $this->_escapeSqlReference($entity, $field);
+                $entityField = $this->_escapeSqlReference($entity, $column);
             } catch (InvalidArgumentException $invalidArgumentException) {
                 throw $this->_createOutOfRangeException(
                     $this->__('Argument contains an OrderInterface element with invalid entity field information'),
@@ -65,6 +75,21 @@ trait BuildSqlOrderByCapableTrait
 
         return sprintf('ORDER BY %s', implode(', ', $orderParts));
     }
+
+    /**
+     * Retrieves the column name for the given field name.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable $fieldName The field name.
+     *
+     * @throws InvalidArgumentException If the field name is not a valid string.
+     * @throws OutOfBoundsException If no column name could be found for the given field name.
+     * @throws InternalExceptionInterface If a problem occurred while trying to retrieve the column name.
+     *
+     * @return string|Stringable The column name.
+     */
+    abstract protected function _getSqlColumnName($fieldName);
 
     /**
      * Escapes an SQL reference, optionally scoped to a particular entity.

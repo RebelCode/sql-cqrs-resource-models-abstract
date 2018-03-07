@@ -40,6 +40,7 @@ class BuildSqlOrderByCapableTraitTest extends TestCase
                                 $methods,
                                 [
                                     '_escapeSqlReference',
+                                    '_getSqlColumnName',
                                     '_createOutOfRangeException',
                                     '__',
                                 ]
@@ -120,6 +121,46 @@ class BuildSqlOrderByCapableTraitTest extends TestCase
         ];
 
         $expected = "ORDER BY $e1.$f1 ASC, $e2.$f2 DESC, $e3.$f3 DESC";
+
+        $subject->method('_escapeSqlReference')->willReturnCallback(
+            function($e, $f) {
+                return "$e.$f";
+            }
+        );
+        $subject->method('_getSqlColumnName')->willReturnArgument(0);
+
+        $actual = $reflect->_buildSqlOrderBy($arg);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Tests the ORDER BY build method to assert whether the result contains the information given in the argument,
+     * when the fields in the ordering are changed into column names.
+     *
+     * @since [*next-version*]
+     */
+    public function testBuildSqlOrderByColumnNames()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $arg = [
+            $this->createOrder($e1 = uniqid('entity'), $f1 = uniqid('field'), true),
+            $this->createOrder($e2 = uniqid('entity'), $f2 = uniqid('field'), false),
+            $this->createOrder($e3 = uniqid('entity'), $f3 = uniqid('field'), false),
+        ];
+
+        $c1 = uniqid('column');
+        $c2 = uniqid('column');
+        $c3 = uniqid('column');
+
+        $subject->expects($this->exactly(count($arg)))
+                ->method('_getSqlColumnName')
+                ->withConsecutive([$f1], [$f2], [$f3])
+                ->willReturnOnConsecutiveCalls($c1, $c2, $c3);
+
+        $expected = "ORDER BY $e1.$c1 ASC, $e2.$c2 DESC, $e3.$c3 DESC";
 
         $subject->method('_escapeSqlReference')->willReturnCallback(
             function($e, $f) {
