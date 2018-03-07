@@ -198,6 +198,8 @@ class BuildDeleteSqlCapableTraitTest extends TestCase
         $table = uniqid('table');
         $expected = "DELETE FROM $table;";
 
+        $subject->method('_escapeSqlReference')->willReturnArgument(0);
+
         $result = $reflect->_buildDeleteSql(
             $table,
             $condition,
