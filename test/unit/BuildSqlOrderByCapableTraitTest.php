@@ -123,8 +123,8 @@ class BuildSqlOrderByCapableTraitTest extends TestCase
         $expected = "ORDER BY $e1.$f1 ASC, $e2.$f2 DESC, $e3.$f3 DESC";
 
         $subject->method('_escapeSqlReference')->willReturnCallback(
-            function($e, $f) {
-                return "$e.$f";
+            function($r, $p) {
+                return "$p.$r";
             }
         );
         $subject->method('_getSqlColumnName')->willReturnArgument(0);
@@ -163,8 +163,8 @@ class BuildSqlOrderByCapableTraitTest extends TestCase
         $expected = "ORDER BY $e1.$c1 ASC, $e2.$c2 DESC, $e3.$c3 DESC";
 
         $subject->method('_escapeSqlReference')->willReturnCallback(
-            function($e, $f) {
-                return "$e.$f";
+            function($r, $p) {
+                return "$p.$r";
             }
         );
 

@@ -56,7 +56,7 @@ trait BuildSqlOrderByCapableTrait
                 : 'DESC';
 
             try {
-                $entityField = $this->_escapeSqlReference($entity, $column);
+                $entityField = $this->_escapeSqlReference($column, $entity);
             } catch (InvalidArgumentException $invalidArgumentException) {
                 throw $this->_createOutOfRangeException(
                     $this->__('Argument contains an OrderInterface element with invalid entity field information'),
@@ -92,19 +92,19 @@ trait BuildSqlOrderByCapableTrait
     abstract protected function _getSqlColumnName($fieldName);
 
     /**
-     * Escapes an SQL reference, optionally scoped to a particular entity.
+     * Escapes an SQL reference with an optional prefix.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable|null $entity The reference entity name, if any.
-     * @param string|Stringable      $field  The reference field name.
+     * @param string|Stringable      $reference The reference string.
+     * @param string|Stringable|null $prefix    The reference prefix, if any.
      *
      * @throws InvalidArgumentException If either argument is not a valid string.
      * @throws OutOfRangeException      If an invalid string is given as argument.
      *
      * @return string The escaped string.
      */
-    abstract protected function _escapeSqlReference($entity, $field);
+    abstract protected function _escapeSqlReference($reference, $prefix = null);
 
     /**
      * Creates a new Dhii Out Of Range exception.
