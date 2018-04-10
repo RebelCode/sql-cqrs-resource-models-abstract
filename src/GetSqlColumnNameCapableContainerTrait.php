@@ -129,7 +129,7 @@ trait GetSqlColumnNameCapableContainerTrait
      *
      * @return InternalExceptionInterface The new exception.
      */
-    abstract protected function _createInternalException($message = null, $code = null, $previous = null);
+    abstract protected function _createInternalException($message = null, $code = null, RootException $previous = null);
 
     /**
      * Translates a string, and replaces placeholders.

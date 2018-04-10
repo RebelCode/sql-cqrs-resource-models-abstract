@@ -67,16 +67,16 @@
         },
         {
             "name": "dhii/data-container-interface",
-            "version": "dev-develop",
+            "version": "v0.2-alpha2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Dhii/data-container-interface.git",
-                "reference": "f1aa9340dbd73c330cf90272c36491767cc9e8d2"
+                "reference": "7d6a22ee0d2ed9975e1c8c3c6172f801fb4a0e5f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Dhii/data-container-interface/zipball/f1aa9340dbd73c330cf90272c36491767cc9e8d2",
-                "reference": "f1aa9340dbd73c330cf90272c36491767cc9e8d2",
+                "url": "https://api.github.com/repos/Dhii/data-container-interface/zipball/7d6a22ee0d2ed9975e1c8c3c6172f801fb4a0e5f",
+                "reference": "7d6a22ee0d2ed9975e1c8c3c6172f801fb4a0e5f",
                 "shasum": ""
             },
             "require": {
@@ -116,7 +116,7 @@
                 }
             ],
             "description": "Interfaces for working with data containers",
-            "time": "2018-01-30T17:08:13+00:00"
+            "time": "2018-03-21T17:38:50+00:00"
         },
         {
             "name": "dhii/data-key-value-aware-interface",
@@ -352,16 +352,16 @@
         },
         {
             "name": "dhii/output-renderer-interface",
-            "version": "dev-develop",
+            "version": "v0.3-alpha1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Dhii/output-renderer-interface.git",
-                "reference": "7481185f3ee06eacaec951504c96b1d4ee06d7bc"
+                "reference": "2786204ad6b9b79e5f4485aedd700016c13f6668"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Dhii/output-renderer-interface/zipball/7481185f3ee06eacaec951504c96b1d4ee06d7bc",
-                "reference": "7481185f3ee06eacaec951504c96b1d4ee06d7bc",
+                "url": "https://api.github.com/repos/Dhii/output-renderer-interface/zipball/2786204ad6b9b79e5f4485aedd700016c13f6668",
+                "reference": "2786204ad6b9b79e5f4485aedd700016c13f6668",
                 "shasum": ""
             },
             "require": {
@@ -375,6 +375,9 @@
                 "phpunit/phpunit": "4.*",
                 "psr/container": "^1.0",
                 "ptrofimov/xpmock": "^1.1"
+            },
+            "suggest": {
+                "dhii/container-helper-base": "Useful for reading data from different context types uniformly"
             },
             "type": "library",
             "extra": {
@@ -398,7 +401,7 @@
                 }
             ],
             "description": "An interface for objects that can perform rendering.",
-            "time": "2018-01-11T16:13:43+00:00"
+            "time": "2018-04-05T09:39:21+00:00"
         },
         {
             "name": "dhii/php-cs-fixer-config",
@@ -447,12 +450,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Dhii/sql-interface.git",
-                "reference": "b05ebceb7ccd4831e5302e5df70b6ce0a2760226"
+                "reference": "465286d833deff37707ec2cc96884e60e31212d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Dhii/sql-interface/zipball/b05ebceb7ccd4831e5302e5df70b6ce0a2760226",
-                "reference": "b05ebceb7ccd4831e5302e5df70b6ce0a2760226",
+                "url": "https://api.github.com/repos/Dhii/sql-interface/zipball/465286d833deff37707ec2cc96884e60e31212d5",
+                "reference": "465286d833deff37707ec2cc96884e60e31212d5",
                 "shasum": ""
             },
             "require": {
@@ -489,7 +492,7 @@
                 }
             ],
             "description": "Interfaces for SQL resource abstraction.",
-            "time": "2018-03-06T10:43:21+00:00"
+            "time": "2018-04-06T11:15:17+00:00"
         },
         {
             "name": "dhii/stringable-interface",
@@ -539,17 +542,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Dhii/type-interface.git",
-                "reference": "1771aa0c9c3311b3eab5e04991d261d4caa9ea5f"
+                "reference": "d1a1e2e8e2b9649352379dc864615e64951796f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Dhii/type-interface/zipball/1771aa0c9c3311b3eab5e04991d261d4caa9ea5f",
-                "reference": "1771aa0c9c3311b3eab5e04991d261d4caa9ea5f",
+                "url": "https://api.github.com/repos/Dhii/type-interface/zipball/d1a1e2e8e2b9649352379dc864615e64951796f5",
+                "reference": "d1a1e2e8e2b9649352379dc864615e64951796f5",
                 "shasum": ""
             },
             "require": {
                 "dhii/data-key-value-aware-interface": "^0.1",
-                "dhii/validation-interface": "^0.1",
+                "dhii/validation-interface": "^0.1 | ^0.2-alpha1",
                 "php": "^5.3 | ^7.0"
             },
             "require-dev": {
@@ -580,7 +583,7 @@
                 }
             ],
             "description": "Interfaces for type interoperability",
-            "time": "2018-01-10T15:30:06+00:00"
+            "time": "2018-04-06T13:08:54+00:00"
         },
         {
             "name": "dhii/validation-interface",
@@ -1883,16 +1886,16 @@
         },
         {
             "name": "symfony/config",
-            "version": "v2.8.36",
+            "version": "v2.8.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "17605ff58313d9fe94e507620a399721fc347b6d"
+                "reference": "ecacddeaf76732231eea1657f6f5b062dade94c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/17605ff58313d9fe94e507620a399721fc347b6d",
-                "reference": "17605ff58313d9fe94e507620a399721fc347b6d",
+                "url": "https://api.github.com/repos/symfony/config/zipball/ecacddeaf76732231eea1657f6f5b062dade94c9",
+                "reference": "ecacddeaf76732231eea1657f6f5b062dade94c9",
                 "shasum": ""
             },
             "require": {
@@ -1935,20 +1938,20 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2018-01-21T19:03:25+00:00"
+            "time": "2018-03-19T21:11:56+00:00"
         },
         {
             "name": "symfony/console",
-            "version": "v2.8.36",
+            "version": "v2.8.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "a6ff8b2ffa4eb43046828b303af2e3fedadacc27"
+                "reference": "7f78892d900c72a40acd1fe793c856ef0c110f26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/a6ff8b2ffa4eb43046828b303af2e3fedadacc27",
-                "reference": "a6ff8b2ffa4eb43046828b303af2e3fedadacc27",
+                "url": "https://api.github.com/repos/symfony/console/zipball/7f78892d900c72a40acd1fe793c856ef0c110f26",
+                "reference": "7f78892d900c72a40acd1fe793c856ef0c110f26",
                 "shasum": ""
             },
             "require": {
@@ -1996,20 +1999,20 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2018-02-26T15:33:21+00:00"
+            "time": "2018-04-03T05:20:27+00:00"
         },
         {
             "name": "symfony/debug",
-            "version": "v2.8.36",
+            "version": "v2.8.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
-                "reference": "f693ba88189b6384370c13d114cfd010649c31af"
+                "reference": "4486d2be5e068b51fece4c8551c14e709f573c8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/debug/zipball/f693ba88189b6384370c13d114cfd010649c31af",
-                "reference": "f693ba88189b6384370c13d114cfd010649c31af",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/4486d2be5e068b51fece4c8551c14e709f573c8d",
+                "reference": "4486d2be5e068b51fece4c8551c14e709f573c8d",
                 "shasum": ""
             },
             "require": {
@@ -2053,20 +2056,20 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2018-02-28T21:47:46+00:00"
+            "time": "2018-04-03T05:20:27+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.8.36",
+            "version": "v2.8.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "f5d2d7dcc33b89e20c2696ea9afcbddf6540081c"
+                "reference": "9b69aad7d4c086dc94ebade2d5eb9145da5dac8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/f5d2d7dcc33b89e20c2696ea9afcbddf6540081c",
-                "reference": "f5d2d7dcc33b89e20c2696ea9afcbddf6540081c",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/9b69aad7d4c086dc94ebade2d5eb9145da5dac8c",
+                "reference": "9b69aad7d4c086dc94ebade2d5eb9145da5dac8c",
                 "shasum": ""
             },
             "require": {
@@ -2113,11 +2116,11 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2018-02-11T16:53:59+00:00"
+            "time": "2018-04-06T07:35:03+00:00"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.8.36",
+            "version": "v2.8.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
@@ -2166,16 +2169,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v2.8.36",
+            "version": "v2.8.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "c5c751ccd50230b4517393344080a0eaf968bf2d"
+                "reference": "423746fc18ccf31f9abec43e4f078bb6e024b2d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/c5c751ccd50230b4517393344080a0eaf968bf2d",
-                "reference": "c5c751ccd50230b4517393344080a0eaf968bf2d",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/423746fc18ccf31f9abec43e4f078bb6e024b2d5",
+                "reference": "423746fc18ccf31f9abec43e4f078bb6e024b2d5",
                 "shasum": ""
             },
             "require": {
@@ -2211,7 +2214,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2018-03-05T18:27:59+00:00"
+            "time": "2018-04-04T13:38:31+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -2274,16 +2277,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v2.8.36",
+            "version": "v2.8.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "756f614c5061729ea245ac6717231f7e3bfb74f9"
+                "reference": "ee2c91470ff262b1a00aec27875d38594aa87629"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/756f614c5061729ea245ac6717231f7e3bfb74f9",
-                "reference": "756f614c5061729ea245ac6717231f7e3bfb74f9",
+                "url": "https://api.github.com/repos/symfony/process/zipball/ee2c91470ff262b1a00aec27875d38594aa87629",
+                "reference": "ee2c91470ff262b1a00aec27875d38594aa87629",
                 "shasum": ""
             },
             "require": {
@@ -2319,11 +2322,11 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2018-02-12T17:44:58+00:00"
+            "time": "2018-04-03T05:20:27+00:00"
         },
         {
             "name": "symfony/stopwatch",
-            "version": "v2.8.36",
+            "version": "v2.8.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stopwatch.git",
@@ -2372,7 +2375,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.8.36",
+            "version": "v2.8.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
