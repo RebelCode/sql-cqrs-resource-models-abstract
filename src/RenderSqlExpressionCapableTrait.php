@@ -44,8 +44,10 @@ trait RenderSqlExpressionCapableTrait
             );
         }
 
-        $columnMap = $this->_getSqlFieldColumnMap();
-        $aliases   = array_merge($columnMap, $valueHashMap);
+        $aliases = $this->_getSqlFieldColumnMap();
+        foreach ($valueHashMap as $_key => $_val) {
+            $aliases[$_key] = $_val;
+        }
 
         $context = [
             SqlCtx::K_EXPRESSION  => $expression,
