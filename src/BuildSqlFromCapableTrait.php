@@ -20,7 +20,8 @@ trait BuildSqlFromCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|stdClass|Traversable $tables A mapping of tables names (keys) to their aliases (values).
+     * @param array|stdClass|Traversable $tables A mapping of tables names (keys) to their aliases (values). Null
+     *                                           aliases may be given for no aliasing.
      *
      * @return string The build SQL table FROM section.
      */
@@ -29,11 +30,13 @@ trait BuildSqlFromCapableTrait
         $parts = [];
 
         foreach ($tables as $_table => $_alias) {
-            $parts[] = sprintf(
-                '%1$s as %2$s',
-                $this->_escapeSqlReference($_table),
-                $this->_escapeSqlReference($_alias)
-            );
+            $_part = $this->_escapeSqlReference($_table);
+
+            if ($_alias !== null) {
+                $_part = sprintf('%1$s as %2$s', $_part, $this->_escapeSqlReference($_alias));
+            }
+
+            $parts[] = $_part;
         }
 
         $imploded = implode(', ', $parts);

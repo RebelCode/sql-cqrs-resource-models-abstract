@@ -133,20 +133,23 @@ class BuildSqlFromCapableTraitTest extends TestCase
 
         $t1 = uniqid('table-');
         $t2 = uniqid('table-');
+        $t3 = uniqid('table-');
         $a1 = uniqid('alias-');
         $a2 = uniqid('alias-');
+        $a3 = null;
 
         $tables = [
             $t1 => $a1,
             $t2 => $a2,
+            $t3 => $a3,
         ];
 
-        $subject->expects($this->exactly(count($tables) * 2))
+        $subject->expects($this->exactly(5))
                 ->method('_escapeSqlReference')
-                ->withConsecutive([$t1], [$a1], [$t2], [$a2])
-                ->willReturnOnConsecutiveCalls($t1, $a1, $t2, $a2);
+                ->withConsecutive([$t1], [$a1], [$t2], [$a2], [$t3])
+                ->willReturnOnConsecutiveCalls($t1, $a1, $t2, $a2, $t3);
 
-        $expected = "FROM $t1 as $a1, $t2 as $a2";
+        $expected = "FROM $t1 as $a1, $t2 as $a2, $t3";
         $actual = $reflect->_buildSqlFrom($tables);
 
         $this->assertEquals($expected, $actual, 'Built result does not match expected return value.');
