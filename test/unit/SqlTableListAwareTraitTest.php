@@ -35,7 +35,7 @@ class SqlTableListAwareTraitTest extends TestCase
         $mock = $this->getMockBuilder(static::TEST_SUBJECT_CLASSNAME)
                      ->setMethods(
                          [
-                             '_normalizeArray',
+                             '_normalizeIterable',
                              '_createInvalidArgumentException',
                              '__',
                          ]
@@ -98,14 +98,14 @@ class SqlTableListAwareTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
         $input = [
-            uniqid('table-'),
-            uniqid('table-'),
-            uniqid('table-'),
-            uniqid('table-'),
+            uniqid('table-') => uniqid('alias-'),
+            uniqid('table-') => uniqid('alias-'),
+            uniqid('table-') => uniqid('alias-'),
+            uniqid('table-') => uniqid('alias-'),
         ];
 
         $subject->expects($this->atLeastOnce())
-                ->method('_normalizeArray')
+                ->method('_normalizeIterable')
                 ->with($input)
                 ->willReturn($input);
 
@@ -124,14 +124,14 @@ class SqlTableListAwareTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
         $input = [
-            $this->createStringable(uniqid('table-')),
-            $this->createStringable(uniqid('table-')),
-            $this->createStringable(uniqid('table-')),
-            $this->createStringable(uniqid('table-')),
+            uniqid('table-') => $this->createStringable(uniqid('alias-')),
+            uniqid('table-') => $this->createStringable(uniqid('alias-')),
+            uniqid('table-') => $this->createStringable(uniqid('alias-')),
+            uniqid('table-') => $this->createStringable(uniqid('alias-')),
         ];
 
         $subject->expects($this->atLeastOnce())
-                ->method('_normalizeArray')
+                ->method('_normalizeIterable')
                 ->with($input)
                 ->willReturn($input);
 
@@ -150,14 +150,14 @@ class SqlTableListAwareTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
         $input = [
-            uniqid('table-'),
-            $this->createStringable(uniqid('table-')),
-            uniqid('table-'),
-            $this->createStringable(uniqid('table-')),
+            uniqid('table-') => uniqid('table-'),
+            uniqid('table-') => $this->createStringable(uniqid('table-')),
+            uniqid('table-') => uniqid('table-'),
+            uniqid('table-') => $this->createStringable(uniqid('table-')),
         ];
 
         $subject->expects($this->atLeastOnce())
-                ->method('_normalizeArray')
+                ->method('_normalizeIterable')
                 ->with($input)
                 ->willReturn($input);
 
@@ -180,7 +180,7 @@ class SqlTableListAwareTraitTest extends TestCase
         $this->setExpectedException('InvalidArgumentException');
 
         $subject->expects($this->atLeastOnce())
-                ->method('_normalizeArray')
+                ->method('_normalizeIterable')
                 ->with($input)
                 ->willThrowException(new InvalidArgumentException());
 

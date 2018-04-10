@@ -8,18 +8,18 @@ use stdClass;
 use Traversable;
 
 /**
- * Common functionality for objects that are aware of a list of SQL table names.
+ * Common functionality for objects that are aware of a list of SQL table names that map to their aliases.
  *
  * @since [*next-version*]
  */
 trait SqlTableListAwareTrait
 {
     /**
-     * An array of table names.
+     * An array of table names, mapping to their aliases.
      *
      * @since [*next-version*]
      *
-     * @var string[]|Stringable[]
+     * @var array|stdClass|Traversable
      */
     protected $sqlTableList;
 
@@ -28,7 +28,7 @@ trait SqlTableListAwareTrait
      *
      * @since [*next-version*]
      *
-     * @return string[]|Stringable[] The SQL tables names.
+     * @return array|stdClass|Traversable The SQL tables names (keys) mapping to their aliases (values).
      */
     protected function _getSqlTableList()
     {
@@ -40,23 +40,25 @@ trait SqlTableListAwareTrait
      *
      * @since [*next-version*]
      *
-     * @param string[]|Stringable[]|Traversable $tables The SQL tables names.
+     * @param array|stdClass|Traversable $tables The SQL tables names (keys) mapping to their aliases (values).
      */
     protected function _setSqlTableList($tables)
     {
-        $this->sqlTableList = $this->_normalizeArray($tables);
+        $this->sqlTableList = $this->_normalizeIterable($tables);
     }
 
     /**
-     * Normalizes a value into an array.
+     * Normalizes an iterable.
+     *
+     * Makes sure that the return value can be iterated over.
      *
      * @since [*next-version*]
      *
-     * @param array|stdClass|Traversable $value The value to normalize.
+     * @param mixed $iterable The iterable to normalize.
      *
-     * @throws InvalidArgumentException If value cannot be normalized.
+     * @throws InvalidArgumentException If the iterable could not be normalized.
      *
-     * @return array The normalized value.
+     * @return array|stdClass|Traversable The normalized iterable.
      */
-    abstract protected function _normalizeArray($value);
+    abstract protected function _normalizeIterable($iterable);
 }
