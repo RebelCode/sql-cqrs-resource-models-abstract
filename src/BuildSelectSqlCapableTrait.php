@@ -10,6 +10,7 @@ use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
 use OutOfRangeException;
+use stdClass;
 use Traversable;
 
 /**
@@ -25,7 +26,8 @@ trait BuildSelectSqlCapableTrait
      * @since [*next-version*]
      *
      * @param string[]|Stringable[]             $columns        A list of names of columns to select.
-     * @param array                             $tables         A list of names of tables to select from.
+     * @param array|stdClass|Traversable        $tables         A mapping of tables names (keys) to their aliases
+     *                                                          (values). Null aliases may be given for no aliasing.
      * @param LogicalExpressionInterface[]      $joinConditions Optional list of JOIN conditions, keyed by table name.
      * @param LogicalExpressionInterface|null   $whereCondition Optional WHERE condition.
      * @param OrderInterface[]|Traversable|null $ordering       The ordering, as a list of OrderInterface instances.
@@ -48,7 +50,7 @@ trait BuildSelectSqlCapableTrait
         $offset = null,
         array $valueHashMap = []
     ) {
-        if (count($tables) === 0) {
+        if ($this->_countIterable($tables) === 0) {
             throw $this->_createInvalidArgumentException(
                 $this->__('No tables were given'),
                 null,
@@ -61,7 +63,7 @@ trait BuildSelectSqlCapableTrait
             ? $this->_escapeSqlReferenceList($columns)
             : '*';
 
-        $tableList = $this->_escapeSqlReferenceList($tables);
+        $from = $this->_buildSqlFrom($tables);
         $joins = $this->_buildSqlJoins($joinConditions, $valueHashMap);
         $where = $this->_buildSqlWhereClause($whereCondition, $valueHashMap);
 
@@ -75,16 +77,28 @@ trait BuildSelectSqlCapableTrait
             ? $this->_buildSqlOffset($offset)
             : '';
 
-        $parts = array_filter([$tableList, $joins, $where, $sOrder, $sLimit, $sOffset], 'strlen');
+        $parts = array_filter([$from, $joins, $where, $sOrder, $sLimit, $sOffset], 'strlen');
         $tail = implode(' ', $parts);
         $query = sprintf(
-            'SELECT %1$s FROM %2$s;',
+            'SELECT %1$s %2$s;',
             $columnList,
             $tail
         );
 
         return $query;
     }
+
+    /**
+     * Builds the SQL FROM section.
+     *
+     * @since [*next-version*]
+     *
+     * @param array|stdClass|Traversable $tables A mapping of tables names (keys) to their aliases (values). Null
+     *                                           aliases may be given for no aliasing.
+     *
+     * @return string The build SQL table FROM section.
+     */
+    abstract protected function _buildSqlFrom($tables);
 
     /**
      * Builds an SQL JOIN clause from a list of join conditions.
@@ -167,6 +181,17 @@ trait BuildSelectSqlCapableTrait
      * @return string The escaped references, as a comma separated string if a list was given.
      */
     abstract protected function _escapeSqlReferenceList($references);
+
+    /**
+     * Counts the elements in an iterable.
+     *
+     * @since [*next-version*]
+     *
+     * @param array|stdClass|Traversable $iterable The iterable to count. Must be finite.
+     *
+     * @return int The amount of elements.
+     */
+    abstract protected function _countIterable($iterable);
 
     /**
      * Creates a new Dhii invalid argument exception.

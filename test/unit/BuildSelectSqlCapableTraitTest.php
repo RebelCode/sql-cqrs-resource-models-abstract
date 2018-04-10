@@ -38,6 +38,8 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                             array_merge(
                                 $methods,
                                 [
+                                    '_countIterable',
+                                    '_buildSqlFrom',
                                     '_buildSqlJoinConditions',
                                     '_buildSqlWhereClause',
                                     '_buildSqlOrderBy',
@@ -113,7 +115,17 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $reflect = $this->reflect($subject);
 
         $tables = ['users', 'profiles'];
-        $tablesList = 'users, profiles';
+        $from = 'FROM users, profiles';
+
+        $subject->expects($this->once())
+                ->method('_countIterable')
+                ->with($tables)
+                ->willReturn(2);
+        $subject->expects($this->once())
+                ->method('_buildSqlFrom')
+                ->with($tables)
+                ->willReturn($from);
+
         $columns = ['id', 'name', 'age'];
         $columnsList = 'id, name, age';
 
@@ -157,7 +169,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->with($joinConditions, $valueHashMap)
                 ->willReturn($joins);
 
-        $expected = "SELECT $columnsList FROM $tablesList $joins $where;";
+        $expected = "SELECT $columnsList $from $joins $where;";
         $result = $reflect->_buildSelectSql(
             $columns,
             $tables,
@@ -184,7 +196,17 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $reflect = $this->reflect($subject);
 
         $tables = ['users', 'profiles'];
-        $tablesList = 'users, profiles';
+        $from = 'FROM users, profiles';
+
+        $subject->expects($this->once())
+                ->method('_countIterable')
+                ->with($tables)
+                ->willReturn(2);
+        $subject->expects($this->once())
+                ->method('_buildSqlFrom')
+                ->with($tables)
+                ->willReturn($from);
+
         $columns = ['id', 'name', 'age'];
         $columnsList = 'id, name, age';
 
@@ -212,7 +234,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->with($joinConditions, $valueHashMap)
                 ->willReturn('');
 
-        $expected = "SELECT $columnsList FROM $tablesList $where;";
+        $expected = "SELECT $columnsList $from $where;";
         $result = $reflect->_buildSelectSql(
             $columns,
             $tables,
@@ -239,7 +261,17 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $reflect = $this->reflect($subject);
 
         $tables = ['users', 'profiles'];
-        $tablesList = 'users, profiles';
+        $from = 'FROM users, profiles';
+
+        $subject->expects($this->once())
+                ->method('_countIterable')
+                ->with($tables)
+                ->willReturn(2);
+        $subject->expects($this->once())
+                ->method('_buildSqlFrom')
+                ->with($tables)
+                ->willReturn($from);
+
         $columns = ['id', 'name', 'age'];
         $columnsList = 'id, name, age';
 
@@ -276,7 +308,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->with($joinConditions, $valueHashMap)
                 ->willReturn($joins);
 
-        $expected = "SELECT $columnsList FROM $tablesList $joins;";
+        $expected = "SELECT $columnsList $from $joins;";
         $result = $reflect->_buildSelectSql(
             $columns,
             $tables,
@@ -302,7 +334,17 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $reflect = $this->reflect($subject);
 
         $tables = ['users', 'profiles'];
-        $tablesList = 'users, profiles';
+        $from = 'FROM users, profiles';
+
+        $subject->expects($this->once())
+                ->method('_countIterable')
+                ->with($tables)
+                ->willReturn(2);
+        $subject->expects($this->once())
+                ->method('_buildSqlFrom')
+                ->with($tables)
+                ->willReturn($from);
+
         $columns = ['id', 'name', 'age'];
         $columnsList = 'id, name, age';
 
@@ -320,7 +362,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->with($joinConditions, $valueHashMap)
                 ->willReturn('');
 
-        $expected = "SELECT $columnsList FROM $tablesList;";
+        $expected = "SELECT $columnsList $from;";
         $result = $reflect->_buildSelectSql(
             $columns,
             $tables,
@@ -346,7 +388,17 @@ class BuildSelectSqlCapableTraitTest extends TestCase
         $reflect = $this->reflect($subject);
 
         $tables = ['users', 'profiles'];
-        $tablesList = 'users, profiles';
+        $from = 'FROM users, profiles';
+
+        $subject->expects($this->once())
+                ->method('_countIterable')
+                ->with($tables)
+                ->willReturn(2);
+        $subject->expects($this->once())
+                ->method('_buildSqlFrom')
+                ->with($tables)
+                ->willReturn($from);
+
         $columns = [];
         $columnsList = '*';
 
@@ -364,7 +416,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->with($joinConditions, $valueHashMap)
                 ->willReturn('');
 
-        $expected = "SELECT $columnsList FROM $tablesList;";
+        $expected = "SELECT $columnsList $from;";
         $result = $reflect->_buildSelectSql(
             $columns,
             $tables,
@@ -391,6 +443,12 @@ class BuildSelectSqlCapableTraitTest extends TestCase
 
         $columns = ['id', 'name', 'age'];
         $tables = [];
+
+        $subject->expects($this->once())
+                ->method('_countIterable')
+                ->with($tables)
+                ->willReturn(0);
+
         $condition = $this->createLogicalExpression('equals', ['age', 18]);
         $joinConditions = [
             'profiles' => $this->createLogicalExpression('equals', ['user.profId', 'profile.id']),
