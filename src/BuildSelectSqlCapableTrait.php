@@ -26,15 +26,15 @@ trait BuildSelectSqlCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param string[]|Stringable[]             $columns        A list of names of columns to select.
-     * @param array|stdClass|Traversable        $tables         A mapping of tables names (keys) to their aliases
-     *                                                          (values). Null aliases may be given for no aliasing.
-     * @param LogicalExpressionInterface[]      $joinConditions Optional list of JOIN conditions, keyed by table name.
-     * @param LogicalExpressionInterface|null   $whereCondition Optional WHERE condition.
-     * @param OrderInterface[]|Traversable|null $ordering       The ordering, as a list of OrderInterface instances.
-     * @param int|null                          $limit          The number of records to limit the query to.
-     * @param int|null                          $offset         The number of records to offset by, zero-based.
-     * @param array                             $valueHashMap   Optional map of value names and their hashes.
+     * @param array|stdClass|Traversable        $columns  The columns, as a map of aliases (as keys) mapping to
+     *                                                    column names, expressions or entity field instances.
+     * @param array|stdClass|Traversable        $tables   A mapping of tables aliases (keys) to their real names.
+     * @param array|Traversable                 $joins    A list of JOIN logical expressions, keyed by table name.
+     * @param LogicalExpressionInterface|null   $where    The WHERE logical expression condition.
+     * @param OrderInterface[]|Traversable|null $ordering The ordering, as a list of OrderInterface instances.
+     * @param int|null                          $limit    The number of records to limit the query to.
+     * @param int|null                          $offset   The number of records to offset by, zero-based.
+     * @param array                             $hashmap  Optional map of value names and their hashes.
      *
      * @throws InvalidArgumentException If an argument is invalid.
      * @throws OutOfRangeException      If the limit or offset are invalid numbers.
@@ -42,14 +42,14 @@ trait BuildSelectSqlCapableTrait
      * @return string The built SQL query string.
      */
     protected function _buildSelectSql(
-        array $columns,
-        array $tables,
-        array $joinConditions = [],
-        LogicalExpressionInterface $whereCondition = null,
+        $columns,
+        $tables,
+        $joins = [],
+        LogicalExpressionInterface $where = null,
         $ordering = null,
         $limit = null,
         $offset = null,
-        array $valueHashMap = []
+        array $hashmap = []
     ) {
         if ($this->_countIterable($tables) === 0) {
             throw $this->_createInvalidArgumentException(
@@ -62,8 +62,8 @@ trait BuildSelectSqlCapableTrait
 
         $columnList = $this->_buildSqlColumnList($columns);
         $from = $this->_buildSqlFrom($tables);
-        $joins = $this->_buildSqlJoins($joinConditions, $valueHashMap);
-        $where = $this->_buildSqlWhereClause($whereCondition, $valueHashMap);
+        $rJoins = $this->_buildSqlJoins($joins, $hashmap);
+        $rWhere = $this->_buildSqlWhereClause($where, $hashmap);
 
         $sOrder = ($ordering !== null)
             ? $this->_buildSqlOrderBy($ordering)
@@ -75,7 +75,7 @@ trait BuildSelectSqlCapableTrait
             ? $this->_buildSqlOffset($offset)
             : '';
 
-        $parts = array_filter([$from, $joins, $where, $sOrder, $sLimit, $sOffset], 'strlen');
+        $parts = array_filter([$from, $rJoins, $rWhere, $sOrder, $sLimit, $sOffset], 'strlen');
         $tail = implode(' ', $parts);
         $query = sprintf(
             'SELECT %1$s %2$s;',
@@ -107,8 +107,7 @@ trait BuildSelectSqlCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|stdClass|Traversable $tables A mapping of tables names (keys) to their aliases (values). Null
-     *                                           aliases may be given for no aliasing.
+     * @param array|stdClass|Traversable $tables A mapping of tables aliases (keys) to their real names (values).
      *
      * @return string The build SQL table FROM section.
      */
