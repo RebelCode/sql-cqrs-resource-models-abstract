@@ -4,6 +4,7 @@ namespace RebelCode\Storage\Resource\Sql;
 
 use Dhii\Exception\InternalExceptionInterface;
 use Dhii\Expression\LogicalExpressionInterface;
+use Dhii\Expression\TermInterface;
 use Dhii\Storage\Resource\Sql\EntityFieldInterface;
 use Dhii\Storage\Resource\Sql\OrderInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
@@ -59,10 +60,7 @@ trait BuildSelectSqlCapableTrait
             );
         }
 
-        $columnList = (count($columns) > 0)
-            ? $this->_escapeSqlReferenceList($columns)
-            : '*';
-
+        $columnList = $this->_buildSqlColumnList($columns);
         $from = $this->_buildSqlFrom($tables);
         $joins = $this->_buildSqlJoins($joinConditions, $valueHashMap);
         $where = $this->_buildSqlWhereClause($whereCondition, $valueHashMap);
@@ -87,6 +85,22 @@ trait BuildSelectSqlCapableTrait
 
         return $query;
     }
+
+    /**
+     * Builds the SQL column list.
+     *
+     * @since [*next-version*]
+     *
+     * @see   EntityFieldInterface
+     * @see   TermInterface
+     * @see   ExpressionInterface
+     *
+     * @param array|stdClass|Traversable $columns The columns, as a map of aliases (as keys) mapping to column names,
+     *                                            expressions or entity field instances (as values).
+     *
+     * @return string The built SQL column list.
+     */
+    abstract protected function _buildSqlColumnList($columns);
 
     /**
      * Builds the SQL FROM section.
@@ -168,19 +182,6 @@ trait BuildSelectSqlCapableTrait
      * @return string The built OFFSET query portion.
      */
     abstract protected function _buildSqlOffset($offset = null);
-
-    /**
-     * Escapes a reference string, or a list of reference strings, for use in SQL queries.
-     *
-     * @since [*next-version*]
-     *
-     * @param string[]|Stringable[]|EntityFieldInterface[]|Traversable $references The references to escape, as a list
-     *                                                                             of strings, stringable objects or
-     *                                                                             `EntityFieldInterface` instances.
-     *
-     * @return string The escaped references, as a comma separated string if a list was given.
-     */
-    abstract protected function _escapeSqlReferenceList($references);
 
     /**
      * Counts the elements in an iterable.

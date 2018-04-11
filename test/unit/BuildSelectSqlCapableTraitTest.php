@@ -39,6 +39,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                                 $methods,
                                 [
                                     '_countIterable',
+                                    '_buildSqlColumnList',
                                     '_buildSqlFrom',
                                     '_buildSqlJoinConditions',
                                     '_buildSqlWhereClause',
@@ -128,6 +129,10 @@ class BuildSelectSqlCapableTraitTest extends TestCase
 
         $columns = ['id', 'name', 'age'];
         $columnsList = 'id, name, age';
+        $subject->expects($this->once())
+                ->method('_buildSqlColumnList')
+                ->with($columns)
+                ->willReturn($columnsList);
 
         $valueHashMap = [
             '18'    => ':12345',
@@ -209,6 +214,10 @@ class BuildSelectSqlCapableTraitTest extends TestCase
 
         $columns = ['id', 'name', 'age'];
         $columnsList = 'id, name, age';
+        $subject->expects($this->once())
+                ->method('_buildSqlColumnList')
+                ->with($columns)
+                ->willReturn($columnsList);
 
         $valueHashMap = [
             '18'    => ':12345',
@@ -274,6 +283,10 @@ class BuildSelectSqlCapableTraitTest extends TestCase
 
         $columns = ['id', 'name', 'age'];
         $columnsList = 'id, name, age';
+        $subject->expects($this->once())
+                ->method('_buildSqlColumnList')
+                ->with($columns)
+                ->willReturn($columnsList);
 
         $valueHashMap = [
             '18'    => ':12345',
@@ -347,6 +360,10 @@ class BuildSelectSqlCapableTraitTest extends TestCase
 
         $columns = ['id', 'name', 'age'];
         $columnsList = 'id, name, age';
+        $subject->expects($this->once())
+                ->method('_buildSqlColumnList')
+                ->with($columns)
+                ->willReturn($columnsList);
 
         $valueHashMap = [];
 
@@ -401,6 +418,10 @@ class BuildSelectSqlCapableTraitTest extends TestCase
 
         $columns = [];
         $columnsList = '*';
+        $subject->expects($this->once())
+                ->method('_buildSqlColumnList')
+                ->with($columns)
+                ->willReturn($columnsList);
 
         $valueHashMap = [];
 
