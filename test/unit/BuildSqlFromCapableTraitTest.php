@@ -149,7 +149,7 @@ class BuildSqlFromCapableTraitTest extends TestCase
                 ->withConsecutive([$t1], [$a1], [$t2], [$a2], [$t3], [$a3])
                 ->willReturnOnConsecutiveCalls($t1, $a1, $t2, $a2, $t3, $a3);
 
-        $expected = "FROM $t1 as $a1, $t2 as $a2, $t3 as $a3";
+        $expected = "FROM $t1 AS $a1, $t2 AS $a2, $t3 AS $a3";
         $actual = $reflect->_buildSqlFrom($tables);
 
         $this->assertEquals($expected, $actual, 'Built result does not match expected return value.');

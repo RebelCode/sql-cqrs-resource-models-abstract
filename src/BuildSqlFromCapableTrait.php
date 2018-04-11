@@ -32,7 +32,7 @@ trait BuildSqlFromCapableTrait
             $_escTable = $this->_escapeSqlReference($_table);
             $_escAlias = $this->_escapeSqlReference($_alias);
 
-            $parts[] = sprintf('%1$s as %2$s', $_escTable, $_escAlias);
+            $parts[] = sprintf('%1$s AS %2$s', $_escTable, $_escAlias);
         }
 
         $imploded = implode(', ', $parts);
