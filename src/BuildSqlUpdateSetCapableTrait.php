@@ -8,6 +8,7 @@ use Dhii\Output\Exception\RendererExceptionInterface;
 use Dhii\Output\Exception\TemplateRenderExceptionInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use InvalidArgumentException;
+use OutOfRangeException;
 use Traversable;
 
 /**
@@ -56,11 +57,15 @@ trait BuildSqlUpdateSetCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param mixed $value The input value.
+     * @param string|int|float|bool|Stringable $value  The input value.
+     * @param string|Stringable|null           $column Optional column name, used for normalizing for a specific
+     *                                                 column's type.
+     *
+     * @throws OutOfRangeException If the value cannot be normalized.
      *
      * @return string The normalized value.
      */
-    abstract protected function _normalizeSqlValue($value);
+    abstract protected function _normalizeSqlValue($value, $column = null);
 
     /**
      * Normalizes a value to its string representation.
