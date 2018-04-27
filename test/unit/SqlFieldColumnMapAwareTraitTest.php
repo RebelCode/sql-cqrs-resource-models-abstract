@@ -35,7 +35,7 @@ class SqlFieldColumnMapAwareTraitTest extends TestCase
         $mock = $this->getMockBuilder(static::TEST_SUBJECT_CLASSNAME)
                      ->setMethods(
                          [
-                             '_normalizeArray',
+                             '_normalizeIterable',
                              '_createInvalidArgumentException',
                              '__',
                          ]
@@ -89,11 +89,11 @@ class SqlFieldColumnMapAwareTraitTest extends TestCase
     }
 
     /**
-     * Tests the getter and setter methods with an array of strings to ensure correct assignment and retrieval.
+     * Tests the getter and setter methods to ensure correct assignment and retrieval.
      *
      * @since [*next-version*]
      */
-    public function testGetSetFieldColumnMapAllStrings()
+    public function testGetSetFieldColumnMap()
     {
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
@@ -104,113 +104,13 @@ class SqlFieldColumnMapAwareTraitTest extends TestCase
         ];
 
         $subject->expects($this->atLeastOnce())
-                ->method('_normalizeArray')
+                ->method('_normalizeIterable')
                 ->with($input)
                 ->willReturn($input);
 
         $reflect->_setSqlFieldColumnMap($input);
 
         $this->assertSame($input, $reflect->_getSqlFieldColumnMap(), 'Set and retrieved value are not the same.');
-    }
-
-    /**
-     * Tests the getter and setter methods with an array of strings to ensure correct assignment and retrieval.
-     *
-     * @since [*next-version*]
-     */
-    public function testGetSetFieldColumnMapAllStringables()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-        $input = [
-            uniqid('field-') => $this->createStringable(uniqid('column-')),
-            uniqid('field-') => $this->createStringable(uniqid('column-')),
-            uniqid('field-') => $this->createStringable(uniqid('column-')),
-        ];
-
-        $subject->expects($this->atLeastOnce())
-                ->method('_normalizeArray')
-                ->with($input)
-                ->willReturn($input);
-
-        $reflect->_setSqlFieldColumnMap($input);
-
-        $this->assertSame($input, $reflect->_getSqlFieldColumnMap(), 'Set and retrieved value are not the same.');
-    }
-
-    /**
-     * Tests the getter and setter methods with an array of strings to ensure correct assignment and retrieval.
-     *
-     * @since [*next-version*]
-     */
-    public function testGetSetFieldColumnMapMixed()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-        $input = [
-            uniqid('field-') => uniqid('column-'),
-            uniqid('field-') => $this->createStringable(uniqid('column-')),
-            uniqid('field-') => uniqid('column-'),
-        ];
-
-        $subject->expects($this->atLeastOnce())
-                ->method('_normalizeArray')
-                ->with($input)
-                ->willReturn($input);
-
-        $reflect->_setSqlFieldColumnMap($input);
-
-        $this->assertSame($input, $reflect->_getSqlFieldColumnMap(), 'Set and retrieved value are not the same.');
-    }
-
-    /**
-     * Tests the getter and setter methods with an invalid value to assert whether an exception is thrown.
-     *
-     * @since [*next-version*]
-     */
-    public function testGetSetFieldColumnMapInvalidValue()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-        $input = [
-            uniqid('field-') => uniqid('string-'),
-            uniqid('field-') => $this->createStringable(uniqid('string-')),
-            uniqid('field-') => new stdClass(),
-        ];
-
-        $subject->expects($this->atLeastOnce())
-                ->method('_normalizeArray')
-                ->with($input)
-                ->willReturn($input);
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $reflect->_setSqlFieldColumnMap($input);
-    }
-
-    /**
-     * Tests the getter and setter methods with an invalid (numeric) key to assert whether an exception is thrown.
-     *
-     * @since [*next-version*]
-     */
-    public function testGetSetFieldColumnMapInvalidKey()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-        $input = [
-            uniqid('field-') => uniqid('column-'),
-            uniqid('field-') => $this->createStringable(uniqid('column-')),
-            uniqid('column-'),
-        ];
-
-        $subject->expects($this->atLeastOnce())
-                ->method('_normalizeArray')
-                ->with($input)
-                ->willReturn($input);
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $reflect->_setSqlFieldColumnMap($input);
     }
 
     /**
@@ -225,7 +125,7 @@ class SqlFieldColumnMapAwareTraitTest extends TestCase
         $input = uniqid('invalid-');
 
         $subject->expects($this->atLeastOnce())
-                ->method('_normalizeArray')
+                ->method('_normalizeIterable')
                 ->with($input)
                 ->willThrowException(new InvalidArgumentException());
 

@@ -2,6 +2,8 @@
 
 namespace RebelCode\Storage\Resource\Sql;
 
+use Dhii\Expression\TermInterface;
+use Dhii\Storage\Resource\Sql\EntityFieldInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
@@ -18,9 +20,11 @@ trait SqlFieldColumnMapAwareTrait
     /**
      * The field to column map, with field names as keys and column names as values.
      *
+     * Allowed values are: string, Stringable, TermInterface, EntityFieldInterface
+     *
      * @since [*next-version*]
      *
-     * @var string|Stringable[]
+     * @var array|stdClass|Traversable
      */
     protected $fieldColumnMap;
 
@@ -29,7 +33,8 @@ trait SqlFieldColumnMapAwareTrait
      *
      * @since [*next-version*]
      *
-     * @return string|Stringable[] A map of field names mapping to entity field instances.
+     * @return string|Stringable[] A map of field names mapping to columns. Column values may be: string, Stringable,
+     *                             TermInterface or EntityFieldInterface
      */
     protected function _getSqlFieldColumnMap()
     {
@@ -41,48 +46,30 @@ trait SqlFieldColumnMapAwareTrait
      *
      * @since [*next-version*]
      *
-     * @param array|stdClass|Traversable $map The field-to-column map.
+     * @param array|stdClass|Traversable $map The field-to-column map. Allowed values are: string, Stringable,
+     *                                        TermInterface, EntityFieldInterface
      *
      * @throws InvalidArgumentException If the argument is not a valid map.
      */
     protected function _setSqlFieldColumnMap($map)
     {
-        $array = $this->_normalizeArray($map);
-
-        foreach ($array as $_key => $_value) {
-            if (!is_string($_value) && !($_value instanceof Stringable)) {
-                throw $this->_createInvalidArgumentException(
-                    $this->__('Argument contains a non-string/non-stringable value'),
-                    null,
-                    null,
-                    $map
-                );
-            }
-            if (!is_string($_key)) {
-                throw $this->_createInvalidArgumentException(
-                    $this->__('Argument contains a non-string key'),
-                    null,
-                    null,
-                    $map
-                );
-            }
-        }
-
-        $this->fieldColumnMap = $array;
+        $this->fieldColumnMap = $this->_normalizeIterable($map);
     }
 
     /**
-     * Normalizes a value into an array.
+     * Normalizes an iterable.
+     *
+     * Makes sure that the return value can be iterated over.
      *
      * @since [*next-version*]
      *
-     * @param array|stdClass|Traversable $value The value to normalize.
+     * @param mixed $iterable The iterable to normalize.
      *
-     * @throws InvalidArgumentException If value cannot be normalized.
+     * @throws InvalidArgumentException If the iterable could not be normalized.
      *
-     * @return array The normalized value.
+     * @return array|stdClass|Traversable The normalized iterable.
      */
-    abstract protected function _normalizeArray($value);
+    abstract protected function _normalizeIterable($iterable);
 
     /**
      * Creates a new invalid argument exception.
