@@ -31,7 +31,7 @@ class SqlFieldNamesAwareTraitTest extends TestCase
     {
         // Create mock
         $mock = $this->getMockBuilder(static::TEST_SUBJECT_CLASSNAME)
-                     ->setMethods(['_getSqlFieldColumnMap'])
+                     ->setMethods(['_getSqlFieldColumnMap', '_normalizeArray'])
                      ->getMockForTrait();
 
         return $mock;
@@ -63,16 +63,22 @@ class SqlFieldNamesAwareTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $map = [
+        $map = (object) [
             $field1 = uniqid('field-') => uniqid('column-'),
             $field2 = uniqid('field-') => uniqid('column-'),
             $field3 = uniqid('field-') => uniqid('column-'),
             $field4 = uniqid('field-') => uniqid('column-'),
         ];
+        $array = (array) $map;
 
         $subject->expects($this->atLeastOnce())
                 ->method('_getSqlFieldColumnMap')
                 ->willReturn($map);
+
+        $subject->expects($this->atLeastOnce())
+                ->method('_normalizeArray')
+                ->with($map)
+                ->willReturn($array);
 
         $expected = [$field1, $field2, $field3, $field4];
 
