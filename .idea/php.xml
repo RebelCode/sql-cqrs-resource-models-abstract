@@ -49,6 +49,7 @@
       <path value="$PROJECT_DIR$/vendor/symfony/process" />
       <path value="$PROJECT_DIR$/vendor/dhii/data-container-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/exception-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/factory-interface" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="5.4.0" />
