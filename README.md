@@ -5,4 +5,5 @@
 [![Test Coverage](https://codeclimate.com/github/RebelCode/sql-cqrs-resource-models-abstract/badges/coverage.svg)](https://codeclimate.com/github/RebelCode/sql-cqrs-resource-models-abstract/coverage)
 [![Latest Stable Version](https://poser.pugx.org/RebelCode/sql-cqrs-resource-models-abstract/version)](https://packagist.org/packages/RebelCode/sql-cqrs-resource-models-abstract)
 
+## Details
 Abstract functionality for SQL CQRS resource models.
