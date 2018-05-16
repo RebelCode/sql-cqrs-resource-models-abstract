@@ -18,15 +18,32 @@
         "phpunit/phpunit": "^4.8",
         "ptrofimov/xpmock": "^1.1",
         "dhii/php-cs-fixer-config": "^0.1",
-        "codeclimate/php-test-reporter": "<=0.3.2"
+        "codeclimate/php-test-reporter": "<=0.3.2",
+        "dhii/stringable-interface": "^0.1",
+        "dhii/expression-interface": "^0.2",
+        "dhii/output-renderer-interface": "^0.3",
+        "dhii/sql-interface": "^0.1",
+        "dhii/data-container-interface": "^0.2",
+        "dhii/exception-interface": "0.2-alpha3"
     },
     "autoload": {
         "psr-4": {
             "RebelCode\\Storage\\Resource\\Sql\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "RebelCode\\Storage\\Resource\\Sql\\FuncTest\\": "test/functional",
+            "RebelCode\\Storage\\Resource\\Sql\\UnitTest\\": "test/unit"
+        }
+    },
     "scripts": {
         "test": "phpunit",
         "csfix": "php-cs-fixer fix -vvv"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "0.1.x-dev"
+        }
     }
 }
