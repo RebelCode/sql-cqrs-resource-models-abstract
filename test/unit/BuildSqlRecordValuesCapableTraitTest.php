@@ -154,14 +154,14 @@ class BuildSqlRecordValuesCapableTraitTest extends TestCase
         $val1 = rand(0, 50);
         $val2 = uniqid('str-');
         $val3 = rand(30, 100);
-        $hash1 = uniqid('hash-');
-        $hash2 = uniqid('hash-');
-        $hash3 = uniqid('hash-');
+        $hash1 = uniqid('hash1-');
+        $hash2 = uniqid('hash2-');
+        $hash3 = uniqid('hash3-');
 
         $columns = [
-            $col1 = uniqid('column-'),
-            $col2 = uniqid('column-'),
-            $col3 = uniqid('column-'),
+            $col1 = uniqid('column1-'),
+            $col2 = uniqid('column2-'),
+            $col3 = uniqid('column3-'),
         ];
         $record = [
             $col1 => $val1,
