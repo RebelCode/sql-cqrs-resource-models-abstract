@@ -20,12 +20,14 @@ trait NormalizeSqlValueCapableTrait
      * @since [*next-version*]
      *
      * @param string|int|float|bool|Stringable $value  The input value.
+     * @param string|Stringable|null           $column Optional column name, used for normalizing for a specific
+     *                                                 column's type.
      *
      * @throws OutOfRangeException If the value cannot be normalized.
      *
      * @return string The normalized value.
      */
-    protected function _normalizeSqlValue($value)
+    protected function _normalizeSqlValue($value, $column = null)
     {
         if ($value === null) {
             return 'NULL';

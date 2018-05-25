@@ -49,10 +49,10 @@ trait BuildSqlRecordValuesCapableTrait
                     $_valueKey = $this->_normalizeString($_value);
                     $_value    = isset($valueHashMap[$_valueKey])
                         ? $valueHashMap[$_valueKey]
-                        : $this->_normalizeSqlValue($_value);
+                        : $this->_normalizeSqlValue($_value, $_columnName);
                 } else {
                     // Otherwise, simply normalize it
-                    $_value = $this->_normalizeSqlValue($_value);
+                    $_value = $this->_normalizeSqlValue($_value, $_columnName);
                 }
             } catch (NotFoundExceptionInterface $notFoundException) {
                 $_value = 'DEFAULT';
@@ -102,8 +102,9 @@ trait BuildSqlRecordValuesCapableTrait
      * @since [*next-version*]
      *
      * @param string|int|float|bool|Stringable $value  The input value.
+     * @param string|Stringable|null           $column Optional column name.
      *
      * @return string The normalized value.
      */
-    abstract protected function _normalizeSqlValue($value);
+    abstract protected function _normalizeSqlValue($value, $column = null);
 }

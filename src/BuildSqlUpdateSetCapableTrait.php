@@ -42,10 +42,10 @@ trait BuildSqlUpdateSetCapableTrait
                 $_valueStr = $this->_normalizeString($_value);
                 $_value = isset($valueHashMap[$_valueStr])
                     ? $valueHashMap[$_valueStr]
-                    : $this->_normalizeSqlValue($_value);
+                    : $this->_normalizeSqlValue($_value, $_column);
             } else {
                 // Otherwise just normalize
-                $_value = $this->_normalizeSqlValue($_value);
+                $_value = $this->_normalizeSqlValue($_value, $_column);
             }
 
             $changes[] = sprintf('`%1$s` = %2$s', $_column, $_value);
@@ -61,13 +61,15 @@ trait BuildSqlUpdateSetCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param string|int|float|bool|Stringable $value The input value.
+     * @param string|int|float|bool|Stringable $value  The input value.
+     * @param string|Stringable|null           $column Optional column name, used for normalizing for a specific
+     *                                                 column's type.
      *
      * @throws OutOfRangeException If the value cannot be normalized.
      *
      * @return string The normalized value.
      */
-    abstract protected function _normalizeSqlValue($value);
+    abstract protected function _normalizeSqlValue($value, $column = null);
 
     /**
      * Normalizes a value to its string representation.
