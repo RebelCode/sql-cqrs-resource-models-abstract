@@ -158,4 +158,45 @@ class BuildSqlUpdateSetCapableTraitTest extends TestCase
 
         $this->assertEquals($expected, $actual);
     }
+
+    /**
+     * Tests the SQL update set build method to assert whether the returned string is correct.
+     *
+     * @since [*next-version*]
+     */
+    public function testBuildSqlUpdateSetNullValue()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $val1 = rand(0, 50);
+        $val2 = uniqid('str-');
+        $val3 = null;
+        $col1 = uniqid('column-');
+        $col2 = uniqid('column-');
+        $col3 = uniqid('column-');
+        $hash1 = uniqid('hash-');
+
+        $changeSet = [
+            $col1 => $val1,
+            $col2 => $val2,
+            $col3 => null,
+        ];
+
+        $valueHashMap = [
+            $val1 => $hash1,
+        ];
+
+        $subject->method('_normalizeString')->willReturnArgument(0);
+
+        $subject->expects($this->exactly(2))
+                ->method('_normalizeSqlValue')
+                ->withConsecutive([$val2], [$val3])
+                ->willReturnOnConsecutiveCalls($nVal2 = "\"$val2\"", 'NULL');
+
+        $expected = sprintf('`%1$s` = %2$s, `%3$s` = %4$s, `%5$s` = NULL', $col1, $hash1, $col2, $nVal2, $col3);
+        $actual = $reflect->_buildSqlUpdateSet($changeSet, $valueHashMap);
+
+        $this->assertEquals($expected, $actual);
+    }
 }
