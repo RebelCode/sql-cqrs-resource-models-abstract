@@ -41,17 +41,24 @@ trait BuildSqlRecordValuesCapableTrait
         foreach ($columns as $_columnName) {
             try {
                 // Get row data for this column
-                $_value    = $this->_containerGet($record, $_columnName);
-                $_valueKey = $this->_normalizeString($_value);
-                // Use hash instead of value if available
-                $_realValue = isset($valueHashMap[$_valueKey])
-                    ? $valueHashMap[$_valueKey]
-                    : $this->_normalizeSqlValue($_value);
+                $_value = $this->_containerGet($record, $_columnName);
+
+                // If value is a scalar, attempt to change it into a hash
+                if (is_scalar($_value)) {
+                    // Attempt to change into a hash
+                    $_valueKey = $this->_normalizeString($_value);
+                    $_value    = isset($valueHashMap[$_valueKey])
+                        ? $valueHashMap[$_valueKey]
+                        : $this->_normalizeSqlValue($_value);
+                } else {
+                    // Otherwise, simply normalize it
+                    $_value = $this->_normalizeSqlValue($_value);
+                }
             } catch (NotFoundExceptionInterface $notFoundException) {
-                $_realValue = 'DEFAULT';
+                $_value = 'DEFAULT';
             }
 
-            $data[$_columnName] = $_realValue;
+            $data[$_columnName] = $_value;
         }
 
         return sprintf('(%s)', implode(', ', $data));

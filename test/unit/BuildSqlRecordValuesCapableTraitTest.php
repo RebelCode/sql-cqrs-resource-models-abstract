@@ -192,4 +192,52 @@ class BuildSqlRecordValuesCapableTraitTest extends TestCase
 
         $this->assertEquals($expected, $actual);
     }
+
+    /**
+     * Tests the SQL record values build method to assert whether the returned values string is correct when a record
+     * has a null value for a particular column.
+     *
+     * @since [*next-version*]
+     */
+    public function testBuildSqlRecordValuesContainsNull()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $val1 = rand(0, 50);
+        $val2 = uniqid('str-');
+        $val3 = null;
+        $hash1 = uniqid('hash1-');
+        $hash2 = uniqid('hash2-');
+
+        $columns = [
+            $col1 = uniqid('column1-'),
+            $col2 = uniqid('column2-'),
+            $col3 = uniqid('column3-'),
+        ];
+        $record = [
+            $col1 => $val1,
+            $col2 => $val2,
+            $col3 => $val3,
+        ];
+
+        $valueHashMap = [
+            $val1 => $hash1,
+            $val2 => $hash2,
+        ];
+
+        $subject->expects($this->once())
+                ->method('_normalizeSqlValue')
+                ->willReturn('NULL');
+
+        $subject->expects($this->exactly(count($columns)))
+                ->method('_containerGet')
+                ->withConsecutive([$record, $col1], [$record, $col2], [$record, $col3])
+                ->willReturnOnConsecutiveCalls($val1, $val2, $val3);
+
+        $expected = sprintf('(%1$s, %2$s, NULL)', $hash1, $hash2);
+        $actual = $reflect->_buildSqlRecordValues($columns, $record, $valueHashMap);
+
+        $this->assertEquals($expected, $actual);
+    }
 }
