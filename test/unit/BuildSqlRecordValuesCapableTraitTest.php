@@ -105,9 +105,9 @@ class BuildSqlRecordValuesCapableTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $val1 = rand(0, 50);
+        $val1 = rand(0, 30);
         $val2 = uniqid('str-');
-        $val3 = rand(30, 100);
+        $val3 = rand(50, 100);
         $hash1 = uniqid('hash1-');
         $hash2 = uniqid('hash2-');
         $hash3 = uniqid('hash3-');
@@ -151,9 +151,9 @@ class BuildSqlRecordValuesCapableTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $val1 = rand(0, 50);
+        $val1 = rand(0, 30);
         $val2 = uniqid('str-');
-        $val3 = rand(30, 100);
+        $val3 = rand(50, 100);
         $hash1 = uniqid('hash1-');
         $hash2 = uniqid('hash2-');
         $hash3 = uniqid('hash3-');
