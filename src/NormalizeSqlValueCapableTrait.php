@@ -29,6 +29,10 @@ trait NormalizeSqlValueCapableTrait
      */
     protected function _normalizeSqlValue($value, $column = null)
     {
+        if ($value === null) {
+            return 'NULL';
+        }
+
         if (is_string($value) || $value instanceof Stringable) {
             $str = $this->_normalizeString($value);
 
