@@ -35,13 +35,17 @@ trait BuildSqlUpdateSetCapableTrait
 
         foreach ($changeSet as $_column => $_value) {
             if ($_value instanceof ExpressionInterface) {
+                // Render expression value
                 $_value = $this->_renderSqlExpression($_value, $valueHashMap);
-            } else {
+            } elseif (is_scalar($_value)) {
+                // Change scalar values to hashes, if they exist
                 $_valueStr = $this->_normalizeString($_value);
-
                 $_value = isset($valueHashMap[$_valueStr])
                     ? $valueHashMap[$_valueStr]
                     : $this->_normalizeSqlValue($_value);
+            } else {
+                // Otherwise just normalize
+                $_value = $this->_normalizeSqlValue($_value);
             }
 
             $changes[] = sprintf('`%1$s` = %2$s', $_column, $_value);
