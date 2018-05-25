@@ -86,7 +86,7 @@ class NormalizeSqlValueCapableTraitTest extends TestCase
         $this->assertEquals(
             $expected,
             $reflect->_normalizeSqlValue($input),
-            'Retrieved and expected escaped references do not match.'
+            'Retrieved and expected normalized values do not match.'
         );
     }
 
@@ -110,7 +110,7 @@ class NormalizeSqlValueCapableTraitTest extends TestCase
         $this->assertEquals(
             $expected,
             $reflect->_normalizeSqlValue($input),
-            'Retrieved and expected escaped references do not match.'
+            'Retrieved and expected normalized values do not match.'
         );
     }
 
@@ -136,7 +136,7 @@ class NormalizeSqlValueCapableTraitTest extends TestCase
         $this->assertEquals(
             $expected,
             $reflect->_normalizeSqlValue($input),
-            'Retrieved and expected escaped references do not match.'
+            'Retrieved and expected normalized values do not match.'
         );
     }
 
@@ -156,7 +156,7 @@ class NormalizeSqlValueCapableTraitTest extends TestCase
         $this->assertEquals(
             $expected,
             $reflect->_normalizeSqlValue($input),
-            'Retrieved and expected escaped references do not match.'
+            'Retrieved and expected normalized values do not match.'
         );
     }
 
@@ -176,7 +176,7 @@ class NormalizeSqlValueCapableTraitTest extends TestCase
         $this->assertEquals(
             $expected,
             $reflect->_normalizeSqlValue($input),
-            'Retrieved and expected escaped references do not match.'
+            'Retrieved and expected normalized values do not match.'
         );
     }
 
