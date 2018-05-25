@@ -46,7 +46,7 @@ trait BuildSqlRecordValuesCapableTrait
                 // Use hash instead of value if available
                 $_realValue = isset($valueHashMap[$_valueKey])
                     ? $valueHashMap[$_valueKey]
-                    : $this->_normalizeSqlValue($_value, $_columnName);
+                    : $this->_normalizeSqlValue($_value);
             } catch (NotFoundExceptionInterface $notFoundException) {
                 $_realValue = 'DEFAULT';
             }
@@ -95,9 +95,8 @@ trait BuildSqlRecordValuesCapableTrait
      * @since [*next-version*]
      *
      * @param string|int|float|bool|Stringable $value  The input value.
-     * @param string|Stringable|null           $column Optional column name.
      *
      * @return string The normalized value.
      */
-    abstract protected function _normalizeSqlValue($value, $column = null);
+    abstract protected function _normalizeSqlValue($value);
 }

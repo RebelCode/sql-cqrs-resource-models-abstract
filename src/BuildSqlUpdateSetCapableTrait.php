@@ -57,15 +57,13 @@ trait BuildSqlUpdateSetCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param string|int|float|bool|Stringable $value  The input value.
-     * @param string|Stringable|null           $column Optional column name, used for normalizing for a specific
-     *                                                 column's type.
+     * @param string|int|float|bool|Stringable $value The input value.
      *
      * @throws OutOfRangeException If the value cannot be normalized.
      *
      * @return string The normalized value.
      */
-    abstract protected function _normalizeSqlValue($value, $column = null);
+    abstract protected function _normalizeSqlValue($value);
 
     /**
      * Normalizes a value to its string representation.
