@@ -101,7 +101,7 @@ class BuildSqlOffsetCapableTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $arg = - rand(0, 100);
+        $arg = - rand(1, 100);
         $subject->method('_normalizeInt')->willReturn($arg);
 
         $this->setExpectedException('OutOfRangeException');
