@@ -82,6 +82,29 @@ class BuildSqlColumnListCapableTraitTest extends TestCase
     }
 
     /**
+     * Creates an entity field mock instance that is also a term.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable $entity The entity name.
+     * @param string|Stringable $field  the field name.
+     *
+     * @return EntityFieldInterface|TermInterface|MockObject
+     */
+    public function createEntityFieldTerm($entity, $field)
+    {
+        $mock = $this->mockClassAndInterfaces('stdClass', [
+            'Dhii\Storage\Resource\Sql\EntityFieldInterface',
+            'Dhii\Expression\TermInterface'
+        ]);
+
+        $mock->method('getEntity')->willReturn($entity);
+        $mock->method('getField')->willReturn($field);
+
+        return $mock;
+    }
+
+    /**
      * Merges the values of two arrays.
      *
      * The resulting product will be a numeric array where the values of both inputs are present, without duplicates.
@@ -251,6 +274,40 @@ class BuildSqlColumnListCapableTraitTest extends TestCase
                 ->method('_renderSqlExpression')
                 ->withConsecutive([$e1], [$e2])
                 ->willReturnOnConsecutiveCalls($r1, $r2);
+
+        $actual = $reflect->_buildSqlColumnList($columns);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Tests the `_buildSqlColumnList()` method with column objects that are both entity fields AND terms to assert
+     * whether the built column list is correct.
+     *
+     * @since [*next-version*]
+     */
+    public function testBuildSqlColumnListEntityFieldsTerms()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+        $ef1 = $this->createEntityFieldTerm(
+            $e1 = uniqid('entity-'),
+            $f1 = uniqid('field-')
+        );
+        $ef2 = $this->createEntityFieldTerm(
+            $e2 = uniqid('entity-'),
+            $f2 = uniqid('field-')
+        );
+        $columns = [
+            $a1 = uniqid('alias-') => $ef1,
+            $a2 = uniqid('alias-') => $ef2,
+        ];
+        $expected = "`$e1`.`$f1` AS `$a1`, `$e2`.`$f2` AS `$a2`";
+
+        $subject->expects($this->exactly(count($columns) * 2))
+                ->method('_escapeSqlReference')
+                ->withConsecutive([$f1, $e1], [$a1], [$f2, $e2], [$a2])
+                ->willReturnOnConsecutiveCalls("`$e1`.`$f1`", "`$a1`", "`$e2`.`$f2`", "`$a2`");
 
         $actual = $reflect->_buildSqlColumnList($columns);
 
