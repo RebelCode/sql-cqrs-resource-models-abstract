@@ -39,10 +39,10 @@ trait BuildSqlColumnListCapableTrait
         $columnList = [];
 
         foreach ($columns as $_alias => $_column) {
-            if ($_column instanceof TermInterface) {
-                $_rColumn = $this->_renderSqlExpression($_column);
-            } elseif ($_column instanceof EntityFieldInterface) {
+            if ($_column instanceof EntityFieldInterface) {
                 $_rColumn = $this->_escapeSqlReference($_column->getField(), $_column->getEntity());
+            } elseif ($_column instanceof TermInterface) {
+                $_rColumn = $this->_renderSqlExpression($_column);
             } else {
                 $_rColumn = $this->_escapeSqlReference($_column);
             }
