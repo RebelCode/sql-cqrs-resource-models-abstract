@@ -4,6 +4,7 @@ namespace RebelCode\Storage\Resource\Sql;
 
 use ArrayAccess;
 use Dhii\Exception\InternalExceptionInterface;
+use Dhii\Storage\Resource\Sql\EntityFieldInterface;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
@@ -41,7 +42,7 @@ trait GetSqlColumnNameCapableContainerTrait
         $key = $this->_normalizeString($fieldName);
 
         try {
-            return $this->_containerGet($map, $key);
+            $column = $this->_containerGet($map, $key);
         } catch (NotFoundExceptionInterface $notFoundException) {
             throw $this->_createOutOfBoundsException(
                 $this->__('No column name found for field "%s"', [$fieldName]),
@@ -56,6 +57,10 @@ trait GetSqlColumnNameCapableContainerTrait
                 $containerException
             );
         }
+
+        return ($column instanceof EntityFieldInterface)
+            ? $column->getField()
+            : $column;
     }
 
     /**
