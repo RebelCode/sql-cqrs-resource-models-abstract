@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 
+## [0.1-alpha3] - 2018-06-09
+### Fixed
+- Entity field terms are processed as they should be, before being treated as strings during the building process.
+
 ## [0.1-alpha2] - 2018-05-25
 ### Fixed
 - Null values now correctly handled in INSERT and UPDATE query building.
