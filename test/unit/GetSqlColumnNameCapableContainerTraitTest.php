@@ -2,16 +2,17 @@
 
 namespace RebelCode\Storage\Resource\Sql\FuncTest;
 
+use Dhii\Storage\Resource\Sql\EntityFieldInterface;
+use Dhii\Util\String\StringableInterface as Stringable;
 use Exception;
 use InvalidArgumentException;
 use OutOfBoundsException;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use RebelCode\Storage\Resource\Sql\GetSqlColumnNameCapableContainerTrait as TestSubject;
 use stdClass;
 use Xpmock\TestCase;
-use Exception as RootException;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 /**
  * Tests {@see TestSubject}.
@@ -67,6 +68,24 @@ class GetSqlColumnNameCapableContainerTraitTest extends TestCase
         );
 
         return $mock;
+    }
+
+    /**
+     * Creates an entity field mock instance.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable $entity The entity name.
+     * @param string|Stringable $field  the field name.
+     *
+     * @return EntityFieldInterface
+     */
+    public function createEntityField($entity, $field)
+    {
+        return $this->mock('Dhii\Storage\Resource\Sql\EntityFieldInterface')
+                    ->getEntity($entity)
+                    ->getField($field)
+                    ->new();
     }
 
     /**
@@ -154,6 +173,35 @@ class GetSqlColumnNameCapableContainerTraitTest extends TestCase
                 ->method('_containerGet')
                 ->with($container, $field)
                 ->willReturn($expected);
+
+        $actual = $reflect->_getSqlColumnName($field);
+
+        $this->assertEquals($expected, $actual, 'Expected and retrieved column names do not match.');
+    }
+
+    /**
+     * Tests the SQL column name getter method to assert whether an entity field column is correctly retrieved as just
+     * its field from the container.
+     *
+     * @since [*next-version*]
+     */
+    public function testGetSqlColumnNameEntityField()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $field = uniqid('field-');
+        $entityField = $this->createEntityField('entity', $expected = uniqid('expected-'));
+        $container = [
+            $field => $entityField,
+        ];
+
+        $subject->method('_normalizeString')->willReturn($field);
+        $subject->method('_getSqlFieldColumnMap')->willReturn($container);
+        $subject->expects($this->once())
+                ->method('_containerGet')
+                ->with($container, $field)
+                ->willReturn($entityField);
 
         $actual = $reflect->_getSqlColumnName($field);
 
