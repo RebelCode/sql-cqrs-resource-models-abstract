@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Added
+- SQL SELECT queries can be built with a GROUP BY clause.
 
 ## [0.1-alpha4] - 2018-06-11
 ### Fixed

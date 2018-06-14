@@ -131,12 +131,12 @@ class BuildSqlFromCapableTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $t1 = uniqid('table-');
-        $t2 = uniqid('table-');
-        $t3 = uniqid('table-');
-        $a1 = uniqid('alias-');
-        $a2 = uniqid('alias-');
-        $a3 = uniqid('alias-');
+        $t1 = uniqid('table1-');
+        $t2 = uniqid('table2-');
+        $t3 = uniqid('table3-');
+        $a1 = uniqid('alias1-');
+        $a2 = uniqid('alias2-');
+        $a3 = uniqid('alias3-');
 
         $tables = [
             $a1 => $t1,
