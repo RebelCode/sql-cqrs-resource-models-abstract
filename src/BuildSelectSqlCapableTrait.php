@@ -67,6 +67,7 @@ trait BuildSelectSqlCapableTrait
         $from = $this->_buildSqlFrom($tables);
         $rJoins = $this->_buildSqlJoins($joins, $hashmap);
         $rWhere = $this->_buildSqlWhereClause($where, $hashmap);
+        $rGroup = $this->_buildSqlGroupByClause($grouping);
 
         $sOrder = ($ordering !== null)
             ? $this->_buildSqlOrderBy($ordering)
@@ -78,7 +79,7 @@ trait BuildSelectSqlCapableTrait
             ? $this->_buildSqlOffset($offset)
             : '';
 
-        $parts = array_filter([$from, $rJoins, $rWhere, $sOrder, $sLimit, $sOffset], 'strlen');
+        $parts = array_filter([$from, $rJoins, $rWhere, $rGroup, $sOrder, $sLimit, $sOffset], 'strlen');
         $tail = implode(' ', $parts);
         $query = sprintf(
             'SELECT %1$s %2$s;',
@@ -184,6 +185,21 @@ trait BuildSelectSqlCapableTrait
      * @return string The built OFFSET query portion.
      */
     abstract protected function _buildSqlOffset($offset = null);
+
+    /**
+     * Builds the GROUP BY portion of the an SQL query.
+     *
+     * @since [*next-version*]
+     *
+     * @param array|stdClass|Traversable $grouping A list of strings, stringable objects or entity-field instances.
+     *
+     * @return string The built GROUP BY query portion.
+     *
+     * @throws InvalidArgumentException   If the argument is not a valid iterable.
+     * @throws OutOfRangeException        If an element in the iterable is invalid.
+     * @throws InternalExceptionInterface If a problem occurred while trying to retrieve a column name.
+     */
+    abstract protected function _buildSqlGroupByClause($grouping = []);
 
     /**
      * Counts the elements in an iterable.

@@ -46,6 +46,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                                     '_buildSqlOrderBy',
                                     '_buildSqlLimit',
                                     '_buildSqlOffset',
+                                    '_buildSqlGroupByClause',
                                     '_escapeSqlReferenceList',
                                     '_createInvalidArgumentException',
                                     '__',
@@ -174,7 +175,18 @@ class BuildSelectSqlCapableTraitTest extends TestCase
                 ->with($joinConditions, $valueHashMap)
                 ->willReturn($joins);
 
-        $expected = "SELECT $columnsList $from $joins $where;";
+        $grouping = [
+            uniqid('field1'),
+            uniqid('field2'),
+            uniqid('field3'),
+        ];
+        $groupBy = 'GROUP BY field1, field2, field3';
+        $subject->expects($this->once())
+                ->method('_buildSqlGroupByClause')
+                ->with($grouping)
+                ->willReturn($groupBy);
+
+        $expected = "SELECT $columnsList $from $joins $where $groupBy;";
         $result = $reflect->_buildSelectSql(
             $columns,
             $tables,
@@ -183,7 +195,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
             null,
             null,
             null,
-            [],
+            $grouping,
             $valueHashMap
         );
 
