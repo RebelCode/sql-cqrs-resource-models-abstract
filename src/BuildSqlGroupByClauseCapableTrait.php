@@ -24,7 +24,9 @@ trait BuildSqlGroupByClauseCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|stdClass|Traversable $grouping A list of strings, stringable objects or entity-field instances.
+     * @param string[]|Stringable[]|EntityFieldInterface[]|stdClass|Traversable $grouping A list of strings, stringable
+     *                                                                                    objects or entity-field
+     *                                                                                    instances.
      *
      * @return string The built GROUP BY query portion.
      *
