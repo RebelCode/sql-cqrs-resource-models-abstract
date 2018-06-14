@@ -183,6 +183,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
             null,
             null,
             null,
+            [],
             $valueHashMap
         );
 
@@ -252,6 +253,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
             null,
             null,
             null,
+            [],
             $valueHashMap
         );
 
@@ -330,6 +332,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
             null,
             null,
             null,
+            [],
             $valueHashMap
         );
 
@@ -388,6 +391,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
             null,
             null,
             null,
+            [],
             $valueHashMap
         );
 
@@ -446,6 +450,7 @@ class BuildSelectSqlCapableTraitTest extends TestCase
             null,
             null,
             null,
+            [],
             $valueHashMap
         );
 
@@ -489,8 +494,8 @@ class BuildSelectSqlCapableTraitTest extends TestCase
             $condition,
             null,
             null,
-            null,
             $columnMap,
+            [],
             $valueHashMap
         );
     }

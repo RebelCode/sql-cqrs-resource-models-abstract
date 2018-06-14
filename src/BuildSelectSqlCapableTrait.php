@@ -34,6 +34,8 @@ trait BuildSelectSqlCapableTrait
      * @param OrderInterface[]|Traversable|null $ordering The ordering, as a list of OrderInterface instances.
      * @param int|null                          $limit    The number of records to limit the query to.
      * @param int|null                          $offset   The number of records to offset by, zero-based.
+     * @param array|Traversable                 $grouping The fields to group by, as a list of strings, stringable
+     *                                                    or entity-field instances.
      * @param array                             $hashmap  Optional map of value names and their hashes.
      *
      * @throws InvalidArgumentException If an argument is invalid.
@@ -49,6 +51,7 @@ trait BuildSelectSqlCapableTrait
         $ordering = null,
         $limit = null,
         $offset = null,
+        $grouping = [],
         array $hashmap = []
     ) {
         if ($this->_countIterable($tables) === 0) {
