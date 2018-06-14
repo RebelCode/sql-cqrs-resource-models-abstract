@@ -126,9 +126,9 @@ class BuildSqlUpdateSetCapableTraitTest extends TestCase
         $val1 = rand(0, 50);
         $val2 = uniqid('str-');
         $val3 = $this->createExpression('', []);
-        $col1 = uniqid('column-');
-        $col2 = uniqid('column-');
-        $col3 = uniqid('column-');
+        $col1 = uniqid('column1-');
+        $col2 = uniqid('column2-');
+        $col3 = uniqid('column3-');
         $hash1 = uniqid('hash-');
 
         $changeSet = [
@@ -172,9 +172,9 @@ class BuildSqlUpdateSetCapableTraitTest extends TestCase
         $val1 = rand(0, 50);
         $val2 = uniqid('str-');
         $val3 = null;
-        $col1 = uniqid('column-');
-        $col2 = uniqid('column-');
-        $col3 = uniqid('column-');
+        $col1 = uniqid('column1-');
+        $col2 = uniqid('column2-');
+        $col3 = uniqid('column3-');
         $hash1 = uniqid('hash-');
 
         $changeSet = [
