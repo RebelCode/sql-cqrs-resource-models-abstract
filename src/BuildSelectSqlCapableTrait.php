@@ -79,6 +79,12 @@ trait BuildSelectSqlCapableTrait
         $rJoins = $this->_buildSqlJoins($joins, $hashmap);
         $rWhere = $this->_buildSqlWhereClause($where, $hashmap);
         $rGroup = $this->_buildSqlGroupByClause($grouping);
+        $rHaving = '';
+
+        if (!empty($rGroup)) {
+            $rHaving = str_replace('WHERE', 'HAVING', $rWhere);
+            $rWhere = '';
+        }
 
         $sOrder = ($ordering !== null)
             ? $this->_buildSqlOrderBy($ordering)
@@ -90,7 +96,7 @@ trait BuildSelectSqlCapableTrait
             ? $this->_buildSqlOffset($offset)
             : '';
 
-        $parts = array_filter([$from, $rJoins, $rWhere, $rGroup, $sOrder, $sLimit, $sOffset], 'strlen');
+        $parts = array_filter([$from, $rJoins, $rWhere, $rGroup, $rHaving, $sOrder, $sLimit, $sOffset], 'strlen');
         $tail = implode(' ', $parts);
         $query = sprintf(
             'SELECT %1$s %2$s;',
